@@ -7,23 +7,33 @@ var player: Character = null
 var rival: Character = null
 
 func _ready():
+	RenderingServer.set_default_clear_color(Color.from_hsv(0.5, 1, 0.8))
+
 	var window = Vector2(ProjectSettings.get_setting("display/window/size/viewport_width"), ProjectSettings.get_setting("display/window/size/viewport_height"))
+	
+	var camera = Camera3D.new()
+	add_child(camera)
+	camera.add_child(DirectionalLight3D.new())
+	camera.position = Vector3(0, 0, 8)
+	camera.projection = Camera3D.PROJECTION_ORTHOGONAL
+	camera.size = 8
 	
 	var node = Node2D.new()
 	add_child(node)
 	node.position = window / 2
 
 	var ground = ColorRect.new()
-	ground.color = Color(0, 0.5, 0)
+	ground.color = Color(0, 0.5, 0, 1)
 	ground.size = window
 	ground.position.x = - window.x / 2
+	# ground.position.y = - window.y / 8
 	node.add_child(ground)
 
-	player = Character.new(Vector2(100, 200))
+	player = Character.new(0, Vector2(100, 200))
 	player.position = Vector2(-200, -100)
 	node.add_child(player)
 
-	rival = Character.new(Vector2(100, 200))
+	rival = Character.new(1, Vector2(100, 200))
 	rival.position = Vector2(200, -100)
 	node.add_child(rival)
 
