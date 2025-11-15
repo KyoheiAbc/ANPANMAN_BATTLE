@@ -46,7 +46,7 @@ func _init(character: Character):
 
 func _process(_delta: float) -> void:
 	var new_position = Vector3(character.position.x / 100, -character.position.y / 100, 0)
-	if (new_position - self.position).length_squared() > 0.001:
+	if (new_position - self.position).length_squared() > 0.001 and character.stun_count == 0:
 		var phase = walk_count / 5.0
 		right_arm.rotation_degrees.x = sin(phase) * 45
 		left_arm.rotation_degrees.x = - sin(phase) * 45
@@ -60,13 +60,15 @@ func _process(_delta: float) -> void:
 		walk_count += 1
 	elif character.attack == null:
 		walk_count = 0
-		right_arm.rotation_degrees.x = 0
-		left_arm.rotation_degrees.x = 0
-		right_leg.rotation_degrees.x = 0
-		left_leg.rotation_degrees.x = 0
+		reset()
 
 	if character.stun_count > 0:
 		root.visible = Time.get_ticks_msec() % 100 < 50
+		# rotation_degrees.x = -45
+		right_arm.rotation_degrees.z = 135
+		left_arm.rotation_degrees.z = -135
+		right_leg.rotation_degrees.z = 90
+		left_leg.rotation_degrees.z = -90
 	else:
 		root.visible = true
 
@@ -78,8 +80,15 @@ func _process(_delta: float) -> void:
 	
 	self.position = new_position
 
-	if character.position.y + character.size.y / 2 < 0:
+	if character.is_jumping() and character.stun_count == 0:
 		right_arm.rotation_degrees.x = 90
 		left_arm.rotation_degrees.x = -90
 		right_leg.rotation_degrees.x = -90
 		left_leg.rotation_degrees.x = 90
+
+func reset() -> void:
+	rotation_degrees.x = 0
+	right_arm.rotation_degrees = Vector3.ZERO
+	left_arm.rotation_degrees = Vector3.ZERO
+	right_leg.rotation_degrees = Vector3.ZERO
+	left_leg.rotation_degrees = Vector3.ZERO

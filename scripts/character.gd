@@ -55,7 +55,7 @@ class CustomCollisionShape2D extends CollisionShape2D:
 
 		var color_rect = ColorRect.new()
 		add_child(color_rect)
-		color_rect.color = Color.from_hsv(randf(), 1, 1, 0.1)
+		color_rect.color = Color.from_hsv(randf(), 1, 1, 0)
 		color_rect.size = size
 		color_rect.position = - size / 2
 
@@ -84,7 +84,7 @@ func _process(delta: float) -> void:
 	for area in get_overlapping_areas():
 		if area is Character:
 			area.velocity.x += 1 if area.position.x > position.x else -1
-			area.velocity.y = -1
+			# area.velocity.y = -1
 			
 
 	velocity.y += 5
@@ -123,13 +123,14 @@ func damage(vector: Vector2) -> void:
 func is_jumping() -> bool:
 	return position.y + size.y / 2 < 0
 
-func execute_attack() -> void:
+func execute_attack() -> bool:
 	if attack != null:
-		return
+		return false
 	if stun_count > 0:
-		return
+		return false
 	if is_jumping():
-		return
-	attack = Attack.new(self, Vector2(50, 50), 5, 10, 5, Vector2(30 * direction, -50))
-	attack.position.x = 70 * direction
+		return false
+	attack = Attack.new(self, Vector2(100, 100), 5, 10, 5, Vector2(30 * direction, -50))
+	attack.position.x = 50 * direction
 	add_child(attack)
+	return true

@@ -6,6 +6,8 @@ var input_handler: InputHandler = InputHandler.new()
 var player: Character = null
 var rival: Character = null
 
+var bot: Bot = null
+
 func _ready():
 	RenderingServer.set_default_clear_color(Color.from_hsv(0.5, 1, 0.8))
 
@@ -37,6 +39,9 @@ func _ready():
 	rival.position = Vector2(200, -100)
 	node.add_child(rival)
 	rival.direction = -1
+
+	bot = Bot.new(rival, player)
+	add_child(bot)
 
 	add_child(input_handler)
 
