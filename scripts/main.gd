@@ -42,11 +42,11 @@ func _ready():
 	input_handler.direction.connect(func(direction: Vector2) -> void:
 		if direction.y != 0:
 			return
-		player.velocity += direction * 3
+		player.walk(direction.x)
+		
 	)
 	input_handler.pressed.connect(func() -> void:
-		if player.position.y + player.size.y / 2 >= 0:
-			player.velocity.y = -50
+		player.jump()
 	)
 
 func _process(delta: float) -> void:

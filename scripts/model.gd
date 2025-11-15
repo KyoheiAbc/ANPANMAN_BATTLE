@@ -38,11 +38,16 @@ func _init(character: Character):
 func process():
 	var new_position = Vector3(character.position.x / 100, -character.position.y / 100, 0)
 	if (new_position - self.position).length_squared() > 0.001:
-		var phase = walk_count / 5.0
-		right_arm.rotation_degrees.x = sin(phase) * 45
-		left_arm.rotation_degrees.x = - sin(phase) * 45
-		right_leg.rotation_degrees.x = - sin(phase) * 45
-		left_leg.rotation_degrees.x = sin(phase) * 45
+		# var phase = walk_count / 5.0
+		# right_arm.rotation_degrees.x = sin(phase) * 45
+		# left_arm.rotation_degrees.x = - sin(phase) * 45
+		# right_leg.rotation_degrees.x = - sin(phase) * 45
+		# left_leg.rotation_degrees.x = sin(phase) * 45
+		var phase = 45 if (walk_count % 30) < 15 else -45
+		right_arm.rotation_degrees.x = phase
+		left_arm.rotation_degrees.x = - phase
+		right_leg.rotation_degrees.x = - phase
+		left_leg.rotation_degrees.x = phase
 		walk_count += 1
 	else:
 		walk_count = 0
@@ -51,4 +56,11 @@ func process():
 		right_leg.rotation_degrees.x = 0
 		left_leg.rotation_degrees.x = 0
 
+	
 	self.position = new_position
+
+	if character.position.y + character.size.y / 2 < 0:
+		right_arm.rotation_degrees.x = 90
+		left_arm.rotation_degrees.x = -90
+		right_leg.rotation_degrees.x = -90
+		left_leg.rotation_degrees.x = 90
