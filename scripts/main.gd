@@ -36,6 +36,7 @@ func _ready():
 	rival = Character.new(1, Vector2(100, 150))
 	rival.position = Vector2(200, -100)
 	node.add_child(rival)
+	rival.direction = -1
 
 	add_child(input_handler)
 
@@ -45,17 +46,9 @@ func _ready():
 		player.walk(direction.x)
 		
 	)
-	input_handler.pressed.connect(func() -> void:
-		player.jump()
+	input_handler.pressed.connect(func(position: Vector2) -> void:
+		if position.y < ProjectSettings.get_setting("display/window/size/viewport_height") * 0.5:
+			player.jump()
+		else:
+			player.execute_attack()
 	)
-
-func _process(delta: float) -> void:
-	input_handler.process()
-	player.process()
-
-
-	if randf() < 0.005:
-		rival.jump()
-	rival.walk(1) if player.position.x > rival.position.x else rival.walk(-1)
-
-	rival.process()

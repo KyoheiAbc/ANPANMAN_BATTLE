@@ -1,7 +1,7 @@
 class_name InputHandler
 extends Node
 
-signal pressed()
+signal pressed(position: Vector2)
 signal released()
 signal direction(direction: Vector2)
 
@@ -24,13 +24,13 @@ func _input(event: InputEvent) -> void:
 		if event.keycode == KEY_D or event.keycode == KEY_RIGHT:
 			emit_signal("direction", Vector2(1, 0))
 		if event.keycode == KEY_SPACE or event.keycode == KEY_ENTER:
-			emit_signal("pressed")
+			emit_signal("pressed", Vector2(0, 0))
 
 
 	if event is InputEventScreenTouch:
 		if event.pressed:
 			if event.position.x > drag_area_end_x:
-				emit_signal("pressed")
+				emit_signal("pressed", event.position)
 			else:
 				base_position = event.position
 		if not event.pressed:
@@ -47,7 +47,7 @@ func _input(event: InputEvent) -> void:
 			return
 		delta = event.position - base_position
 
-func process():
+func _process(_delta: float) -> void:
 	if delta.x > threshold:
 		emit_signal("direction", Vector2(1, 0))
 	elif delta.x < -threshold:
