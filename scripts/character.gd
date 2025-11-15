@@ -8,7 +8,7 @@ class CustomCollisionShape2D extends CollisionShape2D:
 
 		var color_rect = ColorRect.new()
 		add_child(color_rect)
-		color_rect.color = Color.from_hsv(randf(), 1, 1, 0.05)
+		color_rect.color = Color.from_hsv(randf(), 1, 1, 0.25)
 		color_rect.size = size
 		color_rect.position = - size / 2
 
@@ -21,7 +21,7 @@ func _init(id: int, size: Vector2):
 	self.id = id
 	self.size = size
 	add_child(CustomCollisionShape2D.new(size))
-	model = Model.new(self.id)
+	model = Model.new(self)
 	add_child(model)
 
 func process():
@@ -42,4 +42,5 @@ func process():
 		velocity.y = 0
 	position.x = clamp(position.x, -800 + size.x / 2, 800 - size.x / 2)
 
-	model.position = Vector3(position.x / 100, (-position.y - size.y / 2) / 100, 0)
+
+	model.process()

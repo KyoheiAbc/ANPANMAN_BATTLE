@@ -5,8 +5,8 @@ signal pressed()
 signal released()
 signal direction(direction: Vector2)
 
-var threshold: int = 50
-var drag_area_end_x: float = ProjectSettings.get_setting("display/window/size/viewport_width") * 0.75
+var threshold: int = 16
+var drag_area_end_x: float = ProjectSettings.get_setting("display/window/size/viewport_width") * 0.8
 
 var base_position = null
 var delta: Vector2 = Vector2.ZERO

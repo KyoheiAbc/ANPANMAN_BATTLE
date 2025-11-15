@@ -29,11 +29,11 @@ func _ready():
 	# ground.position.y = - window.y / 8
 	node.add_child(ground)
 
-	player = Character.new(0, Vector2(100, 200))
+	player = Character.new(0, Vector2(100, 150))
 	player.position = Vector2(-200, -100)
 	node.add_child(player)
 
-	rival = Character.new(1, Vector2(100, 200))
+	rival = Character.new(1, Vector2(100, 150))
 	rival.position = Vector2(200, -100)
 	node.add_child(rival)
 
