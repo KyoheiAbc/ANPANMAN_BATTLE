@@ -11,7 +11,11 @@ var left_arm: Node3D
 var right_leg: Node3D
 var left_leg: Node3D
 
+var character: Character
+
 func _init(character: Character) -> void:
+	self.character = character
+
 	var packed_scene = PackedScene.new()
 
 	var gltf = load(ASSETS[character.id]).instantiate()
@@ -30,6 +34,8 @@ func _init(character: Character) -> void:
 
 func walk() -> void:
 	var phase = Time.get_ticks_msec() / 100.0
+	right_arm.scale = Vector3(1, 1, 1)
+	left_arm.scale = Vector3(1, 1, 1)
 	right_arm.rotation_degrees.x = sin(phase) * 45
 	left_arm.rotation_degrees.x = - sin(phase) * 45
 	right_leg.rotation_degrees.x = - sin(phase) * 45
@@ -43,6 +49,24 @@ func jump() -> void:
 	
 func idle() -> void:
 	right_arm.rotation_degrees.x = 0
+	right_arm.scale = Vector3(1, 1, 1)
 	left_arm.rotation_degrees.x = 0
 	right_leg.rotation_degrees.x = 0
 	left_leg.rotation_degrees.x = 0
+
+func attack() -> void:
+	var attack_instance = character.attack.attack_instance
+	if attack_instance == null:
+		return
+	if attack_instance.frame_counter < 10:
+		right_arm.rotation_degrees.x = -90
+		right_arm.scale = Vector3(1, 1, 1)
+		left_arm.rotation_degrees.x = 45
+		right_leg.rotation_degrees.x = 45
+		left_leg.rotation_degrees.x = -45
+	elif attack_instance.frame_counter < 20:
+		right_arm.rotation_degrees.x = 90
+		right_arm.scale = Vector3(2, 2, 2)
+		left_arm.rotation_degrees.x = -45
+		right_leg.rotation_degrees.x = -45
+		left_leg.rotation_degrees.x = 45

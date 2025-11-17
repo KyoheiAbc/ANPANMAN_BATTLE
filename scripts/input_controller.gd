@@ -3,6 +3,7 @@ extends Node2D
 
 var buttons: Array[Rect2] = []
 var drag_area: Rect2
+var base_position: Vector2 = Vector2.ZERO
 var drag_relative: Vector2 = Vector2.ZERO
 
 signal button(id: int)
@@ -46,12 +47,14 @@ func _input(input_event: InputEvent) -> void:
 
 		if drag_area.has_point(input_event.position):
 			drag_relative = Vector2.ZERO
-			if not input_event.pressed:
+			if input_event.pressed:
+				base_position = input_event.position
+			else:
 				emit_signal("released")
 
 	elif input_event is InputEventScreenDrag:
 		if drag_area.has_point(input_event.position):
-			drag_relative += input_event.relative
+			drag_relative = input_event.position - base_position
 
 func process():
 	if abs(drag_relative.x) > 10:
