@@ -7,6 +7,8 @@ var player: Character = Character.new(0, Vector2(100, 150))
 var rival: Character = Character.new(1, Vector2(100, 150))
 var bot: Bot = Bot.new(rival)
 
+static var FREEZE_COUNT: int = 0
+
 func _ready():
 	camera()
 
@@ -42,6 +44,10 @@ func _ready():
 
 
 func _process(delta: float) -> void:
+	if FREEZE_COUNT > 0:
+		FREEZE_COUNT -= 1
+		return
+		
 	input_controller.process()
 
 	player.process()

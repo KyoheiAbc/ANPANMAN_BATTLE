@@ -8,6 +8,7 @@ func _init(character: Character):
 	self.character = character
 
 class Normal extends Attack:
+	var enabled: bool = true
 	func process() -> bool:
 		frame_count += 1
 
@@ -23,9 +24,12 @@ class Normal extends Attack:
 
 		elif frame_count < 20:
 			position.x = character.size.x * 0.5 * character.direction
-			for area in get_overlapping_areas():
-				if area is Character and area != character:
-					area.velocity.x += 10 * character.direction
-					area.velocity.y = -5
-
+			if enabled:
+				for area in get_overlapping_areas():
+					if area is Character and area != character:
+						area.velocity.x += 10 * character.direction
+						area.velocity.y = -5
+						enabled = false
+						Main.FREEZE_COUNT = 20
+						
 		return frame_count < 30

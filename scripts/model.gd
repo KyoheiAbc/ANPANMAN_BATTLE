@@ -36,7 +36,7 @@ func process() -> void:
 		reset()
 
 		var position_diff_x = abs(character.position.x / 100 - position.x)
-		if position_diff_x > 0:
+		if position_diff_x > 0.01:
 			var rotation = Time.get_ticks_msec() / 1000.0 * PI * 2 * (position_diff_x * 10)
 			right_arm.rotation_degrees.x = sin(rotation) * 30
 			left_arm.rotation_degrees.x = - sin(rotation) * 30
