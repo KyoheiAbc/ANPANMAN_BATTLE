@@ -38,6 +38,15 @@ func _init():
 		color_rect.position = buttons[i].position
 
 func _input(input_event: InputEvent) -> void:
+	if input_event is InputEventKey:
+		if not input_event.pressed:
+			return
+		if input_event.keycode == KEY_SPACE:
+			emit_signal("button", 3)
+		elif input_event.keycode == KEY_ENTER:
+			emit_signal("button", 2)
+		return
+
 	if input_event is InputEventScreenTouch:
 		if input_event.pressed:
 			for i in range(buttons.size()):
