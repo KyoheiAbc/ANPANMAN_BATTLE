@@ -50,7 +50,10 @@ func process() -> void:
 			right_leg.rotation_degrees.x = - sin(rotation) * 30
 			left_leg.rotation_degrees.x = sin(rotation) * 30
 
-	# visible = Time.get_ticks_msec() % 100 < 50
+	if character.stun_count > 0:
+		visible = Time.get_ticks_msec() % 100 < 50
+	else:
+		visible = true
 
 	position = Vector3(character.position.x / 100, -character.position.y / 100, 0)
 
