@@ -14,19 +14,12 @@ class Normal extends Attack:
 		var model = character.model
 
 		if frame_count < 20:
-			model.right_arm.rotation_degrees.x = -90
-			model.left_arm.rotation_degrees.x = 45
-			model.right_leg.rotation_degrees.x = 90
-			model.left_leg.rotation_degrees.x = -90
+			model.set_attack_pose(false)
 
 		if frame_count == 20:
 			add_child(Main.CustomCollisionShape2D.new(Vector2(100, 150)))
 			position.x = character.size.x * 0.5 * character.direction
-			model.right_arm.rotation_degrees.x = 90
-			model.right_arm.scale = Vector3(2, 2, 2)
-			model.left_arm.rotation_degrees.x = -45
-			model.right_leg.rotation_degrees.x = -90
-			model.left_leg.rotation_degrees.x = 90
+			model.set_attack_pose(true)
 
 		if frame_count > 20:
 			for area in get_overlapping_areas():
@@ -50,19 +43,12 @@ class Stinger extends Attack:
 		var model = character.model
 
 		if frame_count < 20:
-			model.right_arm.rotation_degrees.x = -90
-			model.left_arm.rotation_degrees.x = 45
-			model.right_leg.rotation_degrees.x = 90
-			model.left_leg.rotation_degrees.x = -90
+			model.set_attack_pose(false)
 
 		if frame_count == 20:
 			add_child(Main.CustomCollisionShape2D.new(Vector2(100, 150)))
 			position.x = character.size.x * 0.5 * character.direction
-			model.right_arm.rotation_degrees.x = 90
-			model.right_arm.scale = Vector3(2, 2, 2)
-			model.left_arm.rotation_degrees.x = -45
-			model.right_leg.rotation_degrees.x = -90
-			model.left_leg.rotation_degrees.x = 90
+			model.set_attack_pose(true)
 
 		if frame_count > 20:
 			for area in get_overlapping_areas():
@@ -78,6 +64,11 @@ class Missile extends Attack:
 	func _init(character: Character):
 		self.character = character
 		self.velocity.x = character.direction * 20
+		var color_rect = ColorRect.new()
+		add_child(color_rect)
+		color_rect.color = Color.from_hsv(randf(), 1, 1, 0.5)
+		color_rect.size = Vector2(100, 100)
+		color_rect.position = - color_rect.size / 2
 	func process() -> bool:
 		frame_count += 1
 		character.attack_freeze = true
@@ -85,18 +76,11 @@ class Missile extends Attack:
 		var model = character.model
 
 		if frame_count < 20:
-			model.right_arm.rotation_degrees.x = -90
-			model.left_arm.rotation_degrees.x = 45
-			model.right_leg.rotation_degrees.x = 90
-			model.left_leg.rotation_degrees.x = -90
+			model.set_attack_pose(false)
 
 		if frame_count == 20:
-			add_child(Main.CustomCollisionShape2D.new(Vector2(100, 150)))
-			model.right_arm.rotation_degrees.x = 90
-			model.right_arm.scale = Vector3(2, 2, 2)
-			model.left_arm.rotation_degrees.x = -45
-			model.right_leg.rotation_degrees.x = -90
-			model.left_leg.rotation_degrees.x = 90
+			add_child(Main.CustomCollisionShape2D.new(Vector2(100, 100)))
+			model.set_attack_pose(true)
 
 		if frame_count > 20:
 			position += velocity

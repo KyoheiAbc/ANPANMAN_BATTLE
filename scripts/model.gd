@@ -63,3 +63,16 @@ func reset() -> void:
 	left_arm.rotation_degrees = Vector3.ZERO
 	right_leg.rotation_degrees = Vector3.ZERO
 	left_leg.rotation_degrees = Vector3.ZERO
+
+func set_attack_pose(is_finish: bool) -> void:
+	if is_finish:
+		right_arm.rotation_degrees.x = 90
+		right_arm.scale = Vector3(2, 2, 2)
+		left_arm.rotation_degrees.x = -45
+		right_leg.rotation_degrees.x = -90
+		left_leg.rotation_degrees.x = 90
+	else:
+		right_arm.rotation_degrees.x = -90
+		left_arm.rotation_degrees.x = 45
+		right_leg.rotation_degrees.x = 90
+		left_leg.rotation_degrees.x = -90
