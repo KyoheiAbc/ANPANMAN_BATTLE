@@ -48,3 +48,12 @@ class Normal extends AttackInstance:
 					area.velocity.y = -10
 
 		return attack.frame_count < 60
+
+
+class Stinger extends AttackInstance:
+	func process() -> bool:
+		return attack.frame_count < 60
+
+class Missile extends AttackInstance:
+	func process() -> bool:
+		return attack.frame_count < 60

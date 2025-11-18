@@ -56,7 +56,7 @@ func process() -> void:
 			left_arm.rotation_degrees.x = -30
 			right_leg.rotation_degrees.x = -30
 			left_leg.rotation_degrees.x = 30
-		elif character.is_walking:
+		elif character.walk_direction != 0:
 			var rotation = Time.get_ticks_msec() / 100.0
 			right_arm.rotation_degrees.x = sin(rotation) * 30
 			left_arm.rotation_degrees.x = - sin(rotation) * 30

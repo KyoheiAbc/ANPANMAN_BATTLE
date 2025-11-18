@@ -10,7 +10,7 @@ var velocity: Vector2 = Vector2.ZERO
 
 var rival: Character
 
-var is_walking: bool = false
+var walk_direction: int = 0
 var attack: Attack
 
 func _init(id: int, size: Vector2):
@@ -29,12 +29,9 @@ func jump() -> void:
 	if on_ground():
 		velocity.y = -15
 
-func walk(walk_direction: int) -> void:
-	if walk_direction == 0:
-		is_walking = false
-	else:
-		is_walking = true
-		position.x += walk_direction * 8
+func walk(_walk_direction: int) -> void:
+	walk_direction = _walk_direction
+	position.x += walk_direction * 8
 
 func on_ground() -> bool:
 	return position.y + size.y / 2 >= 0
