@@ -7,7 +7,6 @@ var player: Character = Character.new(0, Vector2(100, 150))
 var rival: Character = Character.new(1, Vector2(100, 150))
 var bot: Bot = Bot.new(rival)
 
-static var FREEZE_COUNT: int = 0
 
 func _ready():
 	camera()
@@ -31,26 +30,16 @@ func _ready():
 	add_child(bot)
 
 	add_child(input_controller)
-	input_controller.drag.connect(func(direction: Vector2) -> void:
-		if direction.x != 0:
-			player.walk(direction.x)
-		if direction.y < 0:
-			player.jump()
-	)
+	input_controller.rect.end.x = ProjectSettings.get_setting("display/window/size/viewport_width") * 0.75
 	
-	input_controller.pressed.connect(func() -> void:
-		player.attack_action()
-	)
-
 
 func _process(delta: float) -> void:
-	if FREEZE_COUNT > 0:
-		FREEZE_COUNT -= 1
-		player.model.visible = true
-		rival.model.visible = true
-		return
-
-	input_controller.process()
+	if input_controller.drag.x > 8:
+		player.walk(1)
+	elif input_controller.drag.x < -8:
+		player.walk(-1)
+	if input_controller.drag.y < -64:
+		player.jump()
 
 	player.process()
 	rival.process()

@@ -29,6 +29,5 @@ class Normal extends Attack:
 					if area is Character and area != character:
 						area.damage(Vector2(10 * character.direction, -10))
 						enabled = false
-						Main.FREEZE_COUNT = 20
 
 		return frame_count < 30
