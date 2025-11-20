@@ -18,10 +18,27 @@ func _ready():
 	add_child(rival)
 	rival.position.x = 200
 
+	player.rival = rival
+	rival.rival = player
+
 	add_child(input_controller)
 	input_controller.rect.end.x = ProjectSettings.get_setting("display/window/size/viewport_width") * 0.75
 
+	var input_controller_pressed = InputController.new()
+	add_child(input_controller_pressed)
+	input_controller_pressed.rect.position.x = ProjectSettings.get_setting("display/window/size/viewport_width") * 0.75
+	input_controller_pressed.signal_pressed.connect(func(position: Vector2) -> void:
+		player.attack()
+	)
+
 func _process(delta: float) -> void:
+	if input_controller.drag.y < -64:
+		player.jump()
+	if input_controller.drag.x > 8:
+		player.walk(1)
+	if input_controller.drag.x < -8:
+		player.walk(-1)
+
 	player.process()
 	rival.process()
 
@@ -58,6 +75,6 @@ class CustomCollisionShape2D extends CollisionShape2D:
 
 		var color_rect = ColorRect.new()
 		add_child(color_rect)
-		color_rect.color = Color.from_hsv(randf(), 1, 1, 0.5)
+		color_rect.color = Color.from_hsv(randf(), 1, 1, 0.3)
 		color_rect.size = size
 		color_rect.position = - size / 2

@@ -1,12 +1,11 @@
 class_name Character
 extends Area2D
 
-var speed: float = 1.0
-
 var size: Vector2
 var velocity: Vector2
 
-var attacks: Array[One]
+var attack_counts: Array[int]
+var stun_count: int = 0
 
 var rival: Character
 
@@ -30,13 +29,19 @@ func _init(size: Vector2):
 	add_child(model)
 
 func attack():
-	if attacks.size() >= 3:
+	if attack_counts.size() >= 3:
 		return
-	attacks.append(One.new(16 / speed))
+	attack_counts.append(24)
 
-func attack_count() -> int:
-	for i in range(attacks.size()):
-		if attacks[i].frame_count > 0:
+func damage(vector: Vector2) -> void:
+	if stun_count > 0:
+		return
+	stun_count = 15
+	velocity += vector
+
+func combo_count() -> int:
+	for i in range(attack_counts.size()):
+		if attack_counts[i] > 0:
 			return i + 1
 	return 0
 
@@ -68,25 +73,26 @@ func process():
 	clamp_position()
 
 	attack_process()
+	if stun_count > 0:
+		stun_count -= 1
 
 	model.process()
 
+func walk(walk_direction: int):
+	if control_enabled == false:
+		return
+	velocity.x += walk_direction * 2
+
+func jump():
+	if control_enabled == false:
+		return
+	if not is_on_floor():
+		return
+	velocity.y = -20
 
 func attack_process():
-	if attacks.size() == 0:
-		return
-
-	for atk in attacks:
-		if atk.process():
+	for i in range(attack_counts.size()):
+		attack_counts[i] -= 1
+		if attack_counts[i] > 0:
 			return
-
-	attacks.clear()
-
-
-class One:
-	var frame_count: int = 0
-	func _init(frame_count: int):
-		self.frame_count = frame_count
-	func process() -> bool:
-		frame_count -= 1
-		return frame_count > 0
+	attack_counts.clear()

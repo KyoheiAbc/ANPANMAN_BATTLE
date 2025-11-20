@@ -5,11 +5,14 @@ var rect: Rect2 = Rect2(Vector2(-1000, -1000), Vector2(3000, 3000))
 var pressed: Vector2 = Vector2.ZERO
 var drag: Vector2 = Vector2.ZERO
 
+signal signal_pressed(position: Vector2)
+
 func _input(input: InputEvent) -> void:
 	if input is InputEventScreenTouch:
 		if rect.has_point(input.position):
 			if input.pressed:
 				pressed = input.position
+				emit_signal("signal_pressed", pressed)
 			drag = Vector2.ZERO
 
 	elif input is InputEventScreenDrag:
