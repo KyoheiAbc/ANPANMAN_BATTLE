@@ -10,9 +10,60 @@ var character: Character
 
 func _init(character: Character) -> void:
 	self.character = character
+	
+	match self.get_script():
+		Anpan.AnpanModel:
+			root = load("res://assets/a.gltf").instantiate()
+		Baikin.BaikinModel:
+			root = load("res://assets/b.gltf").instantiate()
+	
 	add_child(root)
 	root.position.y = - character.size.y / 200
 	root.rotation_degrees.y = -135
 
+	arms = [root.get_node("right_arm"), root.get_node("left_arm")]
+	legs = [root.get_node("right_leg"), root.get_node("left_leg")]
+
 func process():
 	position = Vector3(character.position.x / 100, -character.position.y / 100, 0)
+
+
+func idle() -> void:
+	all_rotation_x(0)
+	for arm in arms:
+		arm.scale = Vector3.ONE
+
+func all_rotation_x(x_degrees: float) -> void:
+	arms[0].rotation_degrees.x = x_degrees
+	arms[1].rotation_degrees.x = - x_degrees
+	legs[0].rotation_degrees.x = - x_degrees
+	legs[1].rotation_degrees.x = x_degrees
+
+func walk(progress: float) -> void:
+	idle()
+	all_rotation_x(45 * sin(PI * 2 * progress))
+
+func jump() -> void:
+	idle()
+	all_rotation_x(30)
+
+func punch(right: bool, scale: float) -> void:
+	idle()
+	all_rotation_x(90 if right else -90)
+	var punch_arm = arms[0] if right else arms[1]
+	punch_arm.scale = Vector3.ONE * scale
+	var rest_arm = arms[1] if right else arms[0]
+	rest_arm.rotation_degrees.x = -45
+
+func kick(right: bool, scale: float) -> void:
+	idle()
+
+	var kick_leg = legs[0] if right else legs[1]
+	kick_leg.scale = Vector3.ONE * scale
+	kick_leg.rotation_degrees.x = 90
+
+	var rest_leg = legs[1] if right else legs[0]
+	rest_leg.rotation_degrees.x = -45
+
+	for arm in arms:
+		arm.rotation_degrees.x = -90
