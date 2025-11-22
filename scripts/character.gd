@@ -50,6 +50,9 @@ func jump():
 func attack(is_special: bool):
 	pass
 
+func attack_process():
+	pass
+
 func direction() -> int:
 	return 1 if rival.position.x > position.x else -1
 
@@ -70,6 +73,8 @@ func clamp_position():
 	position.y = clamp(position.y, -400, -size.y / 2)
 
 func process():
+	attack_process()
+
 	physics_process()
 
 	clamp_position()

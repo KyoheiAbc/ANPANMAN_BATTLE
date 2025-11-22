@@ -75,6 +75,6 @@ class CustomCollisionShape2D extends CollisionShape2D:
 
 		var color_rect = ColorRect.new()
 		add_child(color_rect)
-		color_rect.color = Color.from_hsv(randf(), 1, 1, 0.0)
+		color_rect.color = Color.from_hsv(randf(), 1, 1, 0.5)
 		color_rect.size = size
 		color_rect.position = - size / 2

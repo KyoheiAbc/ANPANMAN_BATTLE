@@ -26,6 +26,8 @@ func _init(character: Character) -> void:
 
 func process():
 	# visible = false if Time.get_ticks_msec() % 100 < 50 else true
+	idle()
+	
 	if character.direction() == 1:
 		rotation_degrees.y = 0
 	else:
@@ -38,6 +40,10 @@ func process():
 		walk(Time.get_ticks_msec() / 1000.0 * diff_x * 16)
 	else:
 		idle()
+
+	update_position()
+
+func update_position():
 	position = Vector3(character.position.x / 100, -character.position.y / 100, 0)
 
 func idle() -> void:
@@ -58,3 +64,11 @@ func walk(progress: float) -> void:
 
 func jump() -> void:
 	all_rotation_x(30)
+
+func punch(right: bool, scale: float) -> void:
+	idle()
+	all_rotation_x(90 if right else -90)
+	var punch_arm = arms[0] if right else arms[1]
+	punch_arm.scale = Vector3.ONE * scale
+	var rest_arm = arms[1] if right else arms[0]
+	rest_arm.rotation_degrees.x = -45
