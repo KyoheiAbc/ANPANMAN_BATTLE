@@ -62,8 +62,8 @@ func camera() -> void:
 func stage() -> void:
 	var stage = MeshInstance3D.new()
 	stage.mesh = QuadMesh.new()
-	stage.mesh.size = Vector2(16, 4)
-	stage.position = Vector3(0, -2, -1)
+	stage.mesh.size = Vector2(16, 8)
+	stage.position = Vector3(0, -4, -1)
 	add_child(stage)
 	stage.material_override = StandardMaterial3D.new()
 	stage.material_override.albedo_color = Color(0, 0.5, 0)

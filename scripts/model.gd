@@ -31,7 +31,10 @@ func process():
 	else:
 		rotation_degrees.y = -90
 
-	
+	if abs(character.position.x / 100 - position.x) > 0.01:
+			walk(Time.get_ticks_msec() / 600.0)
+	else:
+		idle()
 	position = Vector3(character.position.x / 100, -character.position.y / 100, 0)
 
 func idle() -> void:
@@ -48,30 +51,7 @@ func all_rotation_x(x_degrees: float) -> void:
 	legs[1].rotation_degrees.x = x_degrees
 
 func walk(progress: float) -> void:
-	idle()
 	all_rotation_x(30 * sin(PI * 2 * progress))
 
 func jump() -> void:
-	idle()
 	all_rotation_x(30)
-
-func punch(right: bool, scale: float) -> void:
-	idle()
-	all_rotation_x(90 if right else -90)
-	var punch_arm = arms[0] if right else arms[1]
-	punch_arm.scale = Vector3.ONE * scale
-	var rest_arm = arms[1] if right else arms[0]
-	rest_arm.rotation_degrees.x = -45
-
-func kick(right: bool, scale: float) -> void:
-	idle()
-
-	var kick_leg = legs[0] if right else legs[1]
-	kick_leg.scale = Vector3.ONE * scale
-	kick_leg.rotation_degrees.x = 90
-
-	var rest_leg = legs[1] if right else legs[0]
-	rest_leg.rotation_degrees.x = -45
-
-	for arm in arms:
-		arm.rotation_degrees.x = -90
