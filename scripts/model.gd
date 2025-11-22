@@ -31,10 +31,11 @@ func process():
 	else:
 		rotation_degrees.y = -90
 
+	var diff_x = abs(character.position.x / 100 - position.x)
 	if character.is_on_floor() == false:
 		jump()
-	elif abs(character.position.x / 100 - position.x) > 0.01:
-		walk(Time.get_ticks_msec() / 500.0)
+	elif diff_x > 0.01:
+		walk(Time.get_ticks_msec() / 1000.0 * diff_x * 16)
 	else:
 		idle()
 	position = Vector3(character.position.x / 100, -character.position.y / 100, 0)
