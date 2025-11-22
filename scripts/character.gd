@@ -34,7 +34,7 @@ func attack():
 
 func combo_count() -> int:
 	for i in range(attack_counts.size()):
-		if attack_counts[i] > 0:
+		if attack_counts[i] >= 0:
 			return i + 1
 	return 0
 
@@ -54,7 +54,7 @@ func physics_process():
 		velocity.y = 0
 		position.y = - size.y / 2
 	else:
-		velocity.y += 1
+		velocity.y += 2
 
 func clamp_position():
 	position.x = clamp(position.x, -800, 800)
@@ -63,9 +63,9 @@ func clamp_position():
 func process():
 	physics_process()
 
-	clamp_position()
-
 	attack_process()
+
+	clamp_position()
 
 	model.process()
 
@@ -79,11 +79,11 @@ func jump():
 		return
 	if not is_on_floor():
 		return
-	velocity.y = -20
+	velocity.y = -32
 
 func attack_process():
 	for i in range(attack_counts.size()):
 		attack_counts[i] -= 1
-		if attack_counts[i] > 0:
+		if attack_counts[i] >= 0:
 			return
 	attack_counts.clear()
