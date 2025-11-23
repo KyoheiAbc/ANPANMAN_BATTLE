@@ -30,7 +30,10 @@ func _ready():
 	add_child(input_controller_pressed)
 	input_controller_pressed.rect.position.x = window.x * 0.8
 	input_controller_pressed.signal_pressed.connect(func(position: Vector2) -> void:
-		player.attack(true if position.y < window.y * 0.5 else false)
+		if position.y > window.y / 2:
+			player.attack()
+		else:
+			player.special_attack()
 	)
 
 func _process(delta: float) -> void:
