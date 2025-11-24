@@ -43,8 +43,4 @@ func attack_process():
 	attack_area.monitoring = false
 
 class AnpanModel extends Model:
-	func process():
-		if character.attack_count > 0:
-			update_position()
-		else:
-			super.process()
+	pass

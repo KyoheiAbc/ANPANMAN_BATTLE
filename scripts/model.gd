@@ -25,6 +25,10 @@ func _init(character: Character) -> void:
 	legs = [root.get_node("right_leg"), root.get_node("left_leg")]
 
 func process():
+	if character.attack_count > 0 or character.special_attack_count > 0:
+		update_position()
+		return
+
 	# visible = false if Time.get_ticks_msec() % 100 < 50 else true
 	idle()
 	
