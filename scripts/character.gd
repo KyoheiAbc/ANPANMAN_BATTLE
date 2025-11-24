@@ -87,7 +87,7 @@ func process():
 	if special_attack_count > 0:
 		special_attack_process()
 	
-	if attack_count > 0:
+	elif attack_count > 0:
 		attack_process()
 
 	physics_process()
