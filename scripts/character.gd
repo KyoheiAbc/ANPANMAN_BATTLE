@@ -5,12 +5,9 @@ var size: Vector2
 var velocity: Vector2
 var direction: int = 1
 
-var continuous_velocity: Vector2 = Vector2.ZERO
-	
 var rival: Character
 
 var control_enabled: bool = true
-var physics_enabled: bool = true
 
 var model: Model
 
@@ -57,8 +54,6 @@ func attack_process():
 	attack_count -= 1
 
 func physics_process():
-	if not physics_enabled:
-		return
 	position += velocity
 
 	velocity.x *= velocity_x_decay
@@ -76,11 +71,10 @@ func process():
 	if attack_count > 0:
 		attack_process()
 
-	direction = 1 if rival.position.x > position.x else -1
+	else:
+		direction = 1 if rival.position.x > position.x else -1
 
-	physics_process()
-
-	position += continuous_velocity
+		physics_process()
 
 	clamp_position()
 
