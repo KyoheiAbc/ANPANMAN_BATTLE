@@ -28,7 +28,7 @@ func process():
 	# visible = false if Time.get_ticks_msec() % 100 < 50 else true
 	idle()
 	
-	if character.direction() == 1:
+	if character.direction == 1:
 		rotation_degrees.y = 0
 	else:
 		rotation_degrees.y = -90

@@ -3,6 +3,7 @@ extends Area2D
 
 var size: Vector2
 var velocity: Vector2
+var direction: int = 1
 
 var continuous_velocity: Vector2 = Vector2.ZERO
 	
@@ -63,10 +64,6 @@ func special_attack():
 func special_attack_process():
 	special_attack_count -= 1
 
-
-func direction() -> int:
-	return 1 if rival.position.x > position.x else -1
-
 func physics_process():
 	if not physics_enabled:
 		return
@@ -89,6 +86,8 @@ func process():
 	
 	elif attack_count > 0:
 		attack_process()
+
+	direction = 1 if rival.position.x > position.x else -1
 
 	physics_process()
 

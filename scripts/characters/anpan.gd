@@ -11,7 +11,7 @@ func _init():
 	attack_area.add_child(Main.CustomCollisionShape2D.new(Vector2(100, 100)))
 	attack_area.area_entered.connect(func(area: Area2D) -> void:
 		if area == rival:
-			rival.velocity.x = 2 * direction()
+			rival.velocity.x = 2 * direction
 			rival.velocity.y = -16
 			attack_area.set_deferred("monitoring", false)
 	)
@@ -21,7 +21,7 @@ func attack():
 	if attack_counts.size() >= 3:
 		return
 	if attack_counts.size() == 0:
-		attack_area.position.x = 100 * direction()
+		attack_area.position.x = 100 * direction
 		
 	attack_counts.append(one_attack_duration)
 	attack_count = 1000
