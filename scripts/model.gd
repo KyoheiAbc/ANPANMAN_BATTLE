@@ -35,7 +35,7 @@ func process():
 	if visible == false:
 		visible = true
 
-	if character.attack_counts.size() > 0 or character.special_count >= 0:
+	if character.attack_counts.size() > 0 or character.special_count >= 0 or character.is_guarding:
 		update_position()
 		return
 
@@ -87,6 +87,11 @@ func punch(scale: float) -> void:
 	rest_arm.rotation_degrees.x = -45
 	
 	punch_arm_right = not punch_arm_right
+
+func guard() -> void:
+	idle()
+	for arm in arms:
+		arm.rotation_degrees.x = 135
 
 func finish() -> void:
 	if character.attack_counts.size() > 0:

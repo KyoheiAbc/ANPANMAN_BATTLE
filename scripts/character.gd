@@ -27,6 +27,10 @@ var custom_gravity: float = 2.0
 
 var stunned_count: int = -1
 
+var invincible_count: int = -1
+
+var is_guarding: bool = false
+
 func _init(size: Vector2):
 	self.size = size
 	add_child(Main.CustomCollisionShape2D.new(size))
@@ -42,6 +46,8 @@ func _init(size: Vector2):
 	add_child(model)
 
 func walk(walk_direction: int):
+	if is_guarding:
+		return
 	if stunned_count >= 0:
 		return
 	if control_enabled == false:
@@ -52,6 +58,8 @@ func is_on_floor() -> bool:
 	return position.y + size.y / 2 >= 0
 	
 func jump():
+	if is_guarding:
+		return
 	if stunned_count >= 0:
 		return
 	if control_enabled == false:
@@ -61,6 +69,8 @@ func jump():
 	velocity.y = - jump_power
 
 func attack():
+	if is_guarding:
+		return
 	if stunned_count >= 0:
 		return
 	if special_count >= 0:
@@ -96,6 +106,8 @@ func current_attack_progress() -> float:
 	return 0.0
 
 func special():
+	if is_guarding:
+		return
 	if stunned_count >= 0:
 		return
 	if attack_counts.size() > 0:
@@ -110,6 +122,23 @@ func special_process():
 
 func unique_process():
 	if special_count >= 0:
+		if special_count == special_duration:
+			model.finish()
+			attack_areas.append(AttackArea.new(Vector2(100, 100), Damage.new(20, Vector2(0, -64), 30)))
+			add_child(attack_areas[-1])
+			attack_areas[-1].position.x = 100 * direction
+		elif special_count == 1.0:
+			for i in range(attack_areas.size() - 1, -1, -1):
+				attack_areas[i].queue_free()
+			attack_areas.clear()
+
+		position.x += 8 * direction
+
+		invincible_count = 30
+
+		for area in attack_areas:
+			area.process(self)
+
 		return
 
 	if current_attack_progress() == 0.0:
@@ -140,6 +169,18 @@ func clamp_position():
 	position.x = clamp(position.x, -800, 800)
 	position.y = clamp(position.y, -400, -size.y / 2)
 
+func guard(enable: bool) -> void:
+	if stunned_count >= 0:
+		return
+	if control_enabled == false:
+		return
+	if attack_counts.size() > 0:
+		return
+	if special_count >= 0:
+		return
+	is_guarding = enable
+	model.guard()
+
 func process():
 	if special_count >= 0:
 		special_process()
@@ -150,6 +191,8 @@ func process():
 	else:
 		direction = 1 if rival.position.x > position.x else -1
 
+		invincible_count -= 1
+		
 		stunned_count -= 1
 
 		physics_process()
@@ -164,8 +207,15 @@ func process():
 	model.process()
 
 func take_damage(damage: Damage) -> void:
+	if invincible_count >= 0:
+		return
 	if stunned_count >= 0:
 		return
+
+	# If guarding, reduce damage and knockback
+	if is_guarding:
+		print("Guarded the attack!")
+	
 	stunned_count = damage.duration
 	velocity += damage.vector
 	attack_counts.clear()
