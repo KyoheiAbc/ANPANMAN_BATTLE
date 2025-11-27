@@ -152,6 +152,5 @@ class AttackArea extends Area2D:
 
 	func process(character: Character) -> void:
 		for area in get_overlapping_areas():
-			# 対戦相手のアタックエリアも検出すれば同時ヒットの実装になるが、今回は見送る
 			if area == character.rival:
 				print(area)
