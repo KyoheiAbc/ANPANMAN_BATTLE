@@ -80,3 +80,6 @@ func punch(scale: float) -> void:
 	rest_arm.rotation_degrees.x = -45
 	
 	punch_arm_right = not punch_arm_right
+
+func finish() -> void:
+	punch(1 + (character.combo_count() - 1) * 0.5)

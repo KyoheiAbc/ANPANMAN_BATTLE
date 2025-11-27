@@ -25,6 +25,7 @@ var jump_power: float = 24.0
 var velocity_x_decay: float = 0.8
 var custom_gravity: float = 2.0
 
+var stunned_count: int = -1
 
 func _init(size: Vector2):
 	self.size = size
@@ -41,6 +42,8 @@ func _init(size: Vector2):
 	add_child(model)
 
 func walk(walk_direction: int):
+	if stunned_count >= 0:
+		return
 	if control_enabled == false:
 		return
 	position.x += walk_direction * walk_step
@@ -49,6 +52,8 @@ func is_on_floor() -> bool:
 	return position.y + size.y / 2 >= 0
 	
 func jump():
+	if stunned_count >= 0:
+		return
 	if control_enabled == false:
 		return
 	if not is_on_floor():
@@ -56,6 +61,8 @@ func jump():
 	velocity.y = - jump_power
 
 func attack():
+	if stunned_count >= 0:
+		return
 	if special_count >= 0:
 		return
 	if attack_counts.size() >= max_combos:
@@ -89,21 +96,35 @@ func current_attack_progress() -> float:
 	return 0.0
 
 func special():
+	if stunned_count >= 0:
+		return
 	if attack_counts.size() > 0:
 		return
 	if special_count >= 0:
 		return
 	special_count = special_duration
 
-func is_special_active() -> bool:
-	return special_count >= 0
-
 func special_process():
 	unique_process()
 	special_count -= 1
 
 func unique_process():
-	pass
+	if special_count >= 0:
+		return
+
+	if current_attack_progress() == 0.0:
+		model.finish()
+	elif current_attack_progress() > 0.5 and attack_areas.size() == 0:
+		attack_areas.append(AttackArea.new(Vector2(100, 100), Damage.new(10, Vector2(2 * direction, -16), 20)))
+		attack_areas[-1].position.x = 100 * direction
+		add_child(attack_areas[-1])
+	elif current_attack_progress() == 1.0:
+		for i in range(attack_areas.size() - 1, -1, -1):
+			attack_areas[i].queue_free()
+		attack_areas.clear()
+
+	for area in attack_areas:
+		area.process(self)
 
 func physics_process():
 	position += velocity
@@ -129,11 +150,25 @@ func process():
 	else:
 		direction = 1 if rival.position.x > position.x else -1
 
+		stunned_count -= 1
+
 		physics_process()
 
 	clamp_position()
 
 	model.process()
+
+func take_damage(damage: Damage) -> void:
+	if stunned_count >= 0:
+		return
+	stunned_count = damage.duration
+	velocity += damage.vector
+	attack_counts.clear()
+	for i in range(attack_areas.size() - 1, -1, -1):
+		attack_areas[i].queue_free()
+	attack_areas.clear()
+
+	special_count = -1
 
 class Damage:
 	var amount: int
@@ -153,4 +188,4 @@ class AttackArea extends Area2D:
 	func process(character: Character) -> void:
 		for area in get_overlapping_areas():
 			if area == character.rival:
-				print(area)
+				character.rival.take_damage(damage)
