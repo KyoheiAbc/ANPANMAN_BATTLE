@@ -39,10 +39,6 @@ func _ready():
 func _process(delta: float) -> void:
 	if input_controller.drag.y < -64:
 		player.jump()
-	if input_controller.drag.y > 64:
-		player.guard(true)
-	else:
-		player.guard(false)
 	if input_controller.drag.x > 8:
 		player.walk(1)
 	if input_controller.drag.x < -8:

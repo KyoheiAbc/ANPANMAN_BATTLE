@@ -27,18 +27,7 @@ func _init(character: Character) -> void:
 	legs = [root.get_node("right_leg"), root.get_node("left_leg")]
 
 func process():
-	if character.stunned_count > 0:
-		visible = false if Time.get_ticks_msec() % 100 < 50 else true
-		update_position()
-		return
-	
-	if visible == false:
-		visible = true
-
-	if character.attack_counts.size() > 0 or character.special_count >= 0 or character.is_guarding:
-		update_position()
-		return
-
+	# visible = false if Time.get_ticks_msec() % 100 < 50 else true
 	idle()
 	
 	if character.direction == 1:
@@ -46,13 +35,12 @@ func process():
 	else:
 		rotation_degrees.y = -90
 
-	var diff_x = abs(character.position.x / 100 - position.x)
-	if character.is_on_floor() == false:
+	if character.is_jumping():
 		jump()
-	elif diff_x > 0.01:
-		walk(Time.get_ticks_msec() / 1000.0 * diff_x * 16)
 	else:
-		idle()
+		var diff_x = abs(character.position.x / 100 - position.x)
+		if diff_x > 0.01:
+			walk(Time.get_ticks_msec() / 1000.0 * diff_x * 16)
 
 	update_position()
 
@@ -79,7 +67,6 @@ func jump() -> void:
 	all_rotation_x(30)
 
 func punch(scale: float) -> void:
-	idle()
 	all_rotation_x(90 if punch_arm_right else -90)
 	var punch_arm = arms[0] if punch_arm_right else arms[1]
 	punch_arm.scale = Vector3.ONE * scale
@@ -87,14 +74,3 @@ func punch(scale: float) -> void:
 	rest_arm.rotation_degrees.x = -45
 	
 	punch_arm_right = not punch_arm_right
-
-func guard() -> void:
-	idle()
-	for arm in arms:
-		arm.rotation_degrees.x = 135
-
-func finish() -> void:
-	if character.attack_counts.size() > 0:
-		punch(1 + (character.combo_count() - 1) * 0.5)
-	else:
-		punch(1)
