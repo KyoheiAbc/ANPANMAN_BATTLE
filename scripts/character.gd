@@ -118,7 +118,8 @@ func special():
 	frame_count = special_duration
 
 func special_process(progress: float) -> void:
-	pass
+	attack_process(progress, 3)
+	position.x += direction * walk_step * 1.5
 
 func damage(damage: Damage) -> void:
 	if state == State.FREEZE:
