@@ -14,8 +14,9 @@ var rival: Character
 
 var model: Model
 
+var hp: int = 100
 var walk_step: float = 8.0
-var jump_power: float = 24.0
+var jump_power: float = 32.0
 var velocity_x_decay: float = 0.8
 var custom_gravity: float = 2.0
 var one_attack_duration: int = 24
@@ -25,6 +26,7 @@ enum State {
 	IDLE,
 	ATTACKING,
 	SPECIAL,
+	FREEZE,
 }
 var state: State = State.IDLE
 
@@ -101,6 +103,15 @@ func special():
 func special_process(progress: float) -> void:
 	pass
 
+func damage(damage: Damage) -> void:
+	if state == State.FREEZE:
+		return
+	idle()
+	state = State.FREEZE
+	hp -= damage.amount
+	velocity = damage.vector
+	frame_count = damage.duration
+
 func process():
 	if state == State.ATTACKING:
 		_attack_process()
@@ -109,19 +120,22 @@ func process():
 
 	frame_count -= 1
 	if frame_count < 0:
-		state = State.IDLE
-		
-		attack_counts.clear()
-
-		for area in attack_areas:
-			area.queue_free()
-		attack_areas.clear()
+		idle()
 
 	physics_process()
 
 	clamp_position()
 
 	model.process()
+
+func idle() -> void:
+	state = State.IDLE
+
+	attack_counts.clear()
+
+	for area in attack_areas:
+		area.queue_free()
+	attack_areas.clear()
 
 func physics_process():
 	position += velocity
