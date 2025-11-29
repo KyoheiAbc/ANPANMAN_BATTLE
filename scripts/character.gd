@@ -21,6 +21,7 @@ var velocity_x_decay: float = 0.8
 var custom_gravity: float = 2.0
 var one_attack_duration: int = 24
 var special_duration: int = 60
+var enable_physics: bool = true
 
 var attack_damages: Array[Damage] = [
 	Damage.new(10, Vector2(2, -16), 20),
@@ -78,6 +79,7 @@ func attack():
 		attack_counts.append(one_attack_duration)
 		frame_count = 1000 * 1000
 		state = State.ATTACKING
+		enable_physics = false
 		return
 	if attack_counts[attack_counts.size() - 1] < one_attack_duration / 2:
 		attack_counts.append(one_attack_duration)
@@ -114,6 +116,7 @@ func special():
 		return
 	state = State.SPECIAL
 	frame_count = special_duration
+	enable_physics = false
 
 func special_process(progress: float) -> void:
 	attack_process(progress, 3)
@@ -147,12 +150,17 @@ func process():
 func idle() -> void:
 	state = State.IDLE
 
+	enable_physics = true
+
 	attack_counts.clear()
 
 	if attack_area:
 		attack_area.queue_free()
 
 func physics_process():
+	if not enable_physics:
+		return
+
 	position += velocity
 
 	velocity.x *= velocity_x_decay
