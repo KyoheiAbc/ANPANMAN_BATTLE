@@ -1,8 +1,8 @@
 class_name Main
 extends Node
 
-var input_controller: InputController = InputController.new()
-
+var input_controller_left: InputController = InputController.new()
+var input_controller_right: InputController = InputController.new()
 var player: Character
 var rival: Character
 
@@ -23,27 +23,29 @@ func _ready():
 	
 	var window: Vector2 = Vector2(ProjectSettings.get_setting("display/window/size/viewport_width"), ProjectSettings.get_setting("display/window/size/viewport_height"))
 	
-	add_child(input_controller)
-	input_controller.rect.end.x = window.x * 0.8
+	add_child(input_controller_left)
+	input_controller_left.rect.end.x = window.x * 0.5
+	input_controller_left.sig.connect(func(i: int):
+		if i < 20:
+			player.direction *= -1
+		else:
+			player.jump()
+	)
 
-	var input_controller_pressed = InputController.new()
-	add_child(input_controller_pressed)
-	input_controller_pressed.rect.position.x = window.x * 0.8
-	input_controller_pressed.signal_pressed.connect(func(position: Vector2) -> void:
-		if position.y > window.y / 2:
+	add_child(input_controller_right)
+	input_controller_right.rect.position.x = window.x * 0.5
+	input_controller_right.sig.connect(func(i: int):
+		if i < 20:
 			player.attack()
 		else:
 			player.special()
 	)
 
+
 func _process(delta: float) -> void:
-	if input_controller.drag.y < -64:
-		player.jump()
-	if input_controller.drag.x > 8:
-		player.walk(1)
-	if input_controller.drag.x < -8:
-		player.walk(-1)
-		
+	input_controller_left.process()
+	input_controller_right.process()
+
 	player.process()
 	rival.process()
 

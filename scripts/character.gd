@@ -50,12 +50,10 @@ func _init(size: Vector2):
 
 	add_child(model)
 
-func walk(walk_direction: int):
+func walk():
 	if state != State.IDLE:
 		return
-	direction = walk_direction
-	position.x += walk_direction * walk_step
-
+	position.x += direction * walk_step
 
 func is_jumping() -> bool:
 	return position.y + size.y / 2 < 0
@@ -140,6 +138,8 @@ func process():
 	frame_count -= 1
 	if frame_count < 0:
 		idle()
+
+	walk()
 
 	physics_process()
 
