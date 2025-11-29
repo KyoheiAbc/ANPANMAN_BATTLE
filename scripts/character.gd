@@ -23,8 +23,8 @@ var one_attack_duration: int = 24
 var special_duration: int = 60
 
 var attack_damages: Array[Damage] = [
-	Damage.new(10, Vector2(0, -16), 30),
-	Damage.new(30, Vector2(8, -32), 30),
+	Damage.new(10, Vector2(2, -16), 20),
+	Damage.new(30, Vector2(16, -32), 20),
 ]
 
 enum State {
@@ -100,15 +100,13 @@ func attack_process(progress: float, combo_count: int):
 	if progress == 0:
 		if attack_area:
 			attack_area.queue_free()
-		attack_area = AttackArea.new(size / 2, attack_damages[1] if combo_count == 3 else attack_damages[0])
+		attack_area = AttackArea.new(self, size / 2, attack_damages[1] if combo_count == 3 else attack_damages[0])
 		add_child(attack_area)
-		attack_area.damage.vector.x *= direction
 		attack_area.position.x = size.x * direction * 0.75
 		model.punch(1 + (combo_count - 1) * 0.5)
-	if progress > 0. and attack_area:
-		for area in attack_area.get_overlapping_areas():
-			if area == rival:
-				rival.damage(attack_area.damage)
+	if progress > 0.5:
+		if attack_area:
+			attack_area.process()
 
 
 func special():
@@ -119,7 +117,7 @@ func special():
 
 func special_process(progress: float) -> void:
 	attack_process(progress, 3)
-	position.x += direction * walk_step * 1.5
+	position.x += direction * walk_step * 1.2
 
 func damage(damage: Damage) -> void:
 	if state == State.FREEZE:
@@ -173,13 +171,26 @@ class Damage:
 	var amount: int
 	var vector: Vector2
 	var duration: int
+
+	var direction: int = 1
+
 	func _init(amount: int, vector: Vector2, duration: int):
 		self.amount = amount
 		self.vector = vector
 		self.duration = duration
 
 class AttackArea extends Area2D:
+	var character: Character
 	var damage: Damage
-	func _init(size: Vector2, damage: Damage):
-		self.damage = damage
+	func _init(character: Character, size: Vector2, damage: Damage):
+		self.character = character
 		add_child(Main.CustomCollisionShape2D.new(size))
+
+		self.damage = damage
+		self.damage.direction = character.direction
+		self.damage.vector.x = abs(self.damage.vector.x) * self.damage.direction
+
+	func process() -> void:
+		for area in get_overlapping_areas():
+			if area == character.rival:
+				character.rival.damage(damage)
