@@ -86,3 +86,14 @@ func punch(finish: bool) -> void:
 		arms[0].scale = Vector3.ONE * 2
 	else:
 		arms[0].rotation_degrees.x = -90
+
+
+func kick(finish: bool) -> void:
+	idle()
+	if finish:
+		all_rotation_x(90)
+		for arm in arms:
+			arm.rotation_degrees.x = -90
+	else:
+		all_rotation_x(-45)
+		legs[1].rotation_degrees.x = -90
