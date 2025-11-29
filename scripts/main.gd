@@ -1,55 +1,61 @@
 class_name Main
 extends Node
 
-var player: Character
-var rival: Character
-var bot: Bot
-var input_controller: InputController
+var characters: Array[Character] = []
+var input_controller: InputController = InputController.new()
+
+static var FREEZE_COUNT: int = 0
 
 func _ready():
 	camera()
 	stage()
 
-	player = Anpan.new()
-	add_child(player)
-	player.position.x = -200
+	characters.append(Anpan.new(characters))
+	characters.append(Baikin.new(characters))
+	characters.append(Baikin.new(characters))
+	characters.append(Baikin.new(characters))
+	for character in characters:
+		add_child(character)
+	characters[0].position.x = -600
+	characters[1].position.x = -200
+	characters[2].position.x = 200
+	characters[3].position.x = 600
 
-	rival = Baikin.new()
-	add_child(rival)
-	rival.position.x = 200
-	rival.direction = -1
-
-	player.rival = rival
-	rival.rival = player
-
-	bot = Bot.new(rival)
-	add_child(bot)
-
-	var window: Vector2 = Vector2(ProjectSettings.get_setting("display/window/size/viewport_width"), ProjectSettings.get_setting("display/window/size/viewport_height"))
-	input_controller = InputController.new()
 	add_child(input_controller)
-	input_controller.pressed.connect(func(position: Vector2):
-		if position.x < window.x / 2:
-			if position.y < window.y / 2:
-				player.jump()
-			else:
-				player.swith_direction()
-		else:
-			if position.y < window.y / 2:
-				player.special()
-			else:
-				player.attack()
-	)
-	
-	
-func _process(delta: float) -> void:
-	player.process()
-	rival.process()
+	input_controller.rect.end.x = ProjectSettings.get_setting("display/window/size/viewport_width") * 0.75
 
-	bot.process()
+	var input_controller_pressed = InputController.new()
+	add_child(input_controller_pressed)
+	input_controller_pressed.rect.position.x = ProjectSettings.get_setting("display/window/size/viewport_width") * 0.75
+	input_controller_pressed.signal_pressed.connect(func(position: Vector2) -> void:
+		if position.y > ProjectSettings.get_setting("display/window/size/viewport_height") / 2:
+			characters[0].attack()
+		else:
+			characters[0].special()
+	)
+
+func _process(delta: float) -> void:
+	FREEZE_COUNT -= 1
+	if FREEZE_COUNT >= 0:
+		for character in characters:
+			character.model.visible = true
+		return
+
+	if input_controller.drag.y < -64:
+		characters[0].jump()
+	if input_controller.drag.x > 8:
+		characters[0].walk(1)
+	if input_controller.drag.x < -8:
+		characters[0].walk(-1)
+
+	for character in characters:
+		character.process()
+
 
 func camera() -> void:
-	RenderingServer.set_default_clear_color(Color(0, 0.4, 0.8))
+	RenderingServer.set_default_clear_color(Color.from_hsv(0.5, 1, 0.8))
+
+	var window = Vector2(ProjectSettings.get_setting("display/window/size/viewport_width"), ProjectSettings.get_setting("display/window/size/viewport_height"))
 
 	var camera_3d = Camera3D.new()
 	add_child(camera_3d)
@@ -66,8 +72,8 @@ func camera() -> void:
 func stage() -> void:
 	var stage = MeshInstance3D.new()
 	stage.mesh = QuadMesh.new()
-	stage.mesh.size = Vector2(16, 16)
-	stage.position = Vector3(0, -8, -1)
+	stage.mesh.size = Vector2(16, 4)
+	stage.position = Vector3(0, -2, -1)
 	add_child(stage)
 	stage.material_override = StandardMaterial3D.new()
 	stage.material_override.albedo_color = Color(0, 0.5, 0)
@@ -79,6 +85,6 @@ class CustomCollisionShape2D extends CollisionShape2D:
 
 		var color_rect = ColorRect.new()
 		add_child(color_rect)
-		color_rect.color = Color.from_hsv(randf(), 1, 1, 0.0)
+		color_rect.color = Color.from_hsv(randf(), 1, 1, 0.1)
 		color_rect.size = size
 		color_rect.position = - size / 2

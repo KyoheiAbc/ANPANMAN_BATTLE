@@ -8,7 +8,6 @@ var legs: Array[Node3D] = []
 
 var character: Character
 
-var punch_arm_right: bool = true
 
 func _init(character: Character) -> void:
 	self.character = character
@@ -34,23 +33,26 @@ func process():
 		
 	if character.state == Character.State.FREEZE:
 		visible = false if Time.get_ticks_msec() % 160 < 80 else true
-	elif character.state == Character.State.ATTACKING:
-		pass
-	elif character.state == Character.State.SPECIAL:
-		pass
-	elif character.is_jumping():
-		jump()
 	else:
-		var diff_x = abs(character.position.x / 100 - position.x)
-		if diff_x > 0.01:
-			walk(Time.get_ticks_msec() / 1000.0 * diff_x * 16)
-		else:
-			idle()
-
-	if character.state != Character.State.FREEZE:
 		visible = true
 
+	if character.state == Character.State.ATTACKING or character.state == Character.State.SPECIAL:
+		update_position()
+		return
+	
+	if character.is_jumping():
+		jump()
+		update_position()
+		return
+
+	var diff_x = abs(character.position.x / 100 - position.x)
+	if diff_x > 0.01:
+		walk(Time.get_ticks_msec() / 1000.0 * diff_x * 16)
+	else:
+		idle()
+
 	update_position()
+
 
 func update_position():
 	position = Vector3(character.position.x / 100, -character.position.y / 100, 0)
@@ -74,12 +76,13 @@ func walk(progress: float) -> void:
 func jump() -> void:
 	all_rotation_x(30)
 
-func punch(scale: float) -> void:
+func attack(finish: bool) -> void:
+	punch(finish)
+
+func punch(finish: bool) -> void:
 	idle()
-	all_rotation_x(90 if punch_arm_right else -90)
-	var punch_arm = arms[0] if punch_arm_right else arms[1]
-	punch_arm.scale = Vector3.ONE * scale
-	var rest_arm = arms[1] if punch_arm_right else arms[0]
-	rest_arm.rotation_degrees.x = -45
-	
-	punch_arm_right = not punch_arm_right
+	if finish:
+		all_rotation_x(90)
+		arms[0].scale = Vector3.ONE * 2
+	else:
+		arms[0].rotation_degrees.x = -90

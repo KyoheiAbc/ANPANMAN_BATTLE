@@ -6,11 +6,13 @@ var velocity: Vector2 = Vector2.ZERO
 var direction: int = 1
 
 var attack_counts: Array[int] = []
-var attack_area: AttackArea
+var attack_areas: Array[AttackArea] = []
 
 var frame_count: int = -1
 
-var rival: Character
+var enable_physics: bool = true
+
+var characters: Array[Character] = []
 
 var model: Model
 
@@ -21,11 +23,12 @@ var velocity_x_decay: float = 0.8
 var custom_gravity: float = 2.0
 var one_attack_duration: int = 24
 var special_duration: int = 60
-var enable_physics: bool = true
 
 var attack_damages: Array[Damage] = [
-	Damage.new(10, Vector2(2, -16), 20),
-	Damage.new(30, Vector2(64, -32), 20),
+	Damage.new(self, 10, Vector2(2, -8), 20),
+	Damage.new(self, 10, Vector2(4, -16), 20),
+	Damage.new(self, 30, Vector2(8, -32), 20),
+	Damage.new(self, 30, Vector2(16, -64), 20),
 ]
 
 enum State {
@@ -36,7 +39,9 @@ enum State {
 }
 var state: State = State.IDLE
 
-func _init(size: Vector2):
+func _init(characters: Array[Character], size: Vector2):
+	self.characters = characters
+
 	self.size = size
 	add_child(Main.CustomCollisionShape2D.new(size))
 
@@ -50,14 +55,11 @@ func _init(size: Vector2):
 
 	add_child(model)
 
-func swith_direction():
-	if state != State.IDLE:
-		return
-	direction *= -1
 
-func walk():
+func walk(walk_direction: int) -> void:
 	if state != State.IDLE:
 		return
+	direction = walk_direction
 	position.x += direction * walk_step
 
 func is_jumping() -> bool:
@@ -82,52 +84,43 @@ func attack():
 		attack_counts.append(one_attack_duration)
 		frame_count = 1000 * 1000
 		state = State.ATTACKING
-		enable_physics = false
 		return
 	if attack_counts[attack_counts.size() - 1] < one_attack_duration / 2:
 		attack_counts.append(one_attack_duration)
 		state = State.ATTACKING
-
-func _attack_process():
-	if attack_counts.size() == 0:
-		return
-
-	for i in range(attack_counts.size()):
-		if attack_counts[i] >= 0:
-			attack_process(float(one_attack_duration - attack_counts[i]) / one_attack_duration, i + 1)
-		attack_counts[i] -= 1
-		if attack_counts[i] >= 0:
-			return
-	
-	frame_count = -1
-
-func attack_process(progress: float, combo_count: int):
+		
+func attack_process(progress: float, combo_count: int) -> void:
 	if progress == 0:
-		if attack_area:
-			attack_area.queue_free()
-		attack_area = AttackArea.new(self, size / 2, attack_damages[1] if combo_count == 3 else attack_damages[0])
-		add_child(attack_area)
-		attack_area.position.x = size.x * direction * 0.75
-		model.punch(1 + (combo_count - 1) * 0.5)
-	if progress > 0.3:
-		if attack_area:
-			attack_area.process()
+		model.attack(false)
+		enable_physics = false
+		attack_areas.append(AttackArea.new(self, size / 2, attack_damages[combo_count - 1].duplicate()))
+		add_child(attack_areas[-1])
+		attack_areas[-1].position.x = size.x * 0.75 * direction
+	elif 0.333 < progress and progress < 0.666:
+		model.attack(true)
+		attack_areas[-1].process()
+	elif progress >= 0.666 and progress < 1.0:
+		pass
+	elif progress == 1.0:
+		var attack_area = attack_areas.pop_back()
+		attack_area.queue_free()
 
-
+	
 func special():
 	if state != State.IDLE:
 		return
 	state = State.SPECIAL
 	frame_count = special_duration
-	enable_physics = false
 
 func special_process(progress: float) -> void:
-	attack_process(progress, 3)
-	position.x += direction * walk_step * 1.2
+	pass
 
 func damage(damage: Damage) -> void:
 	if state == State.FREEZE:
 		return
+	if damage.character == characters[0]:
+		if Main.FREEZE_COUNT < 0:
+			Main.FREEZE_COUNT = 5
 	idle()
 	state = State.FREEZE
 	hp -= damage.amount
@@ -136,7 +129,13 @@ func damage(damage: Damage) -> void:
 
 func process():
 	if state == State.ATTACKING:
-		_attack_process()
+		for i in range(attack_counts.size()):
+			if attack_counts[i] >= 0:
+				attack_process(float(one_attack_duration - attack_counts[i]) / one_attack_duration, i + 1)
+			attack_counts[i] -= 1
+			if attack_counts[i] >= 0:
+				return
+		frame_count = -1
 	elif state == State.SPECIAL:
 		special_process(float(special_duration - frame_count) / special_duration)
 
@@ -144,30 +143,11 @@ func process():
 	if frame_count < 0:
 		idle()
 
-	walk()
-
-	collision()
-
 	physics_process()
 
 	clamp_position()
 
-	bound()
-
 	model.process()
-
-func collision() -> void:
-	for area in get_overlapping_areas():
-		if area == rival:
-			if direction != rival.direction:
-				var damage = Damage.new(0, Vector2(64 * direction, -16), 20)
-				rival.damage(damage)
-
-func bound() -> void:
-	if position.x == 800:
-		swith_direction()
-	elif position.x == -800:
-		swith_direction()
 
 func idle() -> void:
 	state = State.IDLE
@@ -176,8 +156,9 @@ func idle() -> void:
 
 	attack_counts.clear()
 
-	if attack_area:
+	for attack_area in attack_areas:
 		attack_area.queue_free()
+	attack_areas.clear()
 
 	model.idle()
 
@@ -200,16 +181,21 @@ func clamp_position():
 	position.y = clamp(position.y, -400, -size.y / 2)
 
 class Damage:
+	var character: Character
+
 	var amount: int
 	var vector: Vector2
 	var duration: int
 
-	var direction: int = 1
-
-	func _init(amount: int, vector: Vector2, duration: int):
+	func _init(character: Character, amount: int, vector: Vector2, duration: int):
+		self.character = character
 		self.amount = amount
 		self.vector = vector
 		self.duration = duration
+		self.vector.x *= self.character.direction
+
+	func duplicate() -> Damage:
+			return Damage.new(character, amount, vector, duration)
 
 class AttackArea extends Area2D:
 	var character: Character
@@ -219,10 +205,11 @@ class AttackArea extends Area2D:
 		add_child(Main.CustomCollisionShape2D.new(size))
 
 		self.damage = damage
-		self.damage.direction = character.direction
-		self.damage.vector.x = abs(self.damage.vector.x) * self.damage.direction
 
 	func process() -> void:
 		for area in get_overlapping_areas():
-			if area == character.rival:
-				character.rival.damage(damage)
+			for other_character in character.characters:
+				if other_character == character:
+					continue
+				if area == other_character:
+					other_character.damage(damage)
