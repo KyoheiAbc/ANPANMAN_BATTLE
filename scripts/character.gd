@@ -157,6 +157,8 @@ func idle() -> void:
 	if attack_area:
 		attack_area.queue_free()
 
+	model.idle()
+
 func physics_process():
 	if not enable_physics:
 		return
@@ -173,6 +175,10 @@ func physics_process():
 
 func clamp_position():
 	position.x = clamp(position.x, -800, 800)
+	if position.x == 800:
+		direction = -1
+	elif position.x == -800:
+		direction = 1
 	position.y = clamp(position.y, -400, -size.y / 2)
 
 class Damage:

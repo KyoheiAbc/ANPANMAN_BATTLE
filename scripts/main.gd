@@ -17,6 +17,7 @@ func _ready():
 	rival = Baikin.new()
 	add_child(rival)
 	rival.position.x = 200
+	rival.direction = -1
 
 	player.rival = rival
 	rival.rival = player
