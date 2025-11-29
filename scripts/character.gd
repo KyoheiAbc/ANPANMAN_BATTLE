@@ -104,7 +104,7 @@ func attack_process(progress: float, combo_count: int):
 		add_child(attack_area)
 		attack_area.position.x = size.x * direction * 0.75
 		model.punch(1 + (combo_count - 1) * 0.5)
-	if progress > 0.5:
+	if progress > 0.3:
 		if attack_area:
 			attack_area.process()
 
@@ -141,11 +141,18 @@ func process():
 
 	walk()
 
+	bound()
+
 	physics_process()
 
 	clamp_position()
 
 	model.process()
+
+func bound() -> void:
+	for area in get_overlapping_areas():
+		if area == rival:
+			rival.damage(Damage.new(0, Vector2(64 * direction, -24), 15))
 
 func idle() -> void:
 	state = State.IDLE
