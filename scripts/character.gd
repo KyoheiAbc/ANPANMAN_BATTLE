@@ -102,15 +102,16 @@ func attack_process(progress: float, combo_count: int) -> void:
 		add_child(attack_areas[-1])
 		attack_areas[-1].position.x = size.x * 0.75 * direction
 	elif 0.333 < progress and progress < 0.666:
-		model.attack(true)
 		attack_areas[-1].process()
 	elif progress >= 0.666 and progress < 1.0:
 		pass
 	elif progress == 1.0:
 		var attack_area = attack_areas.pop_back()
 		attack_area.queue_free()
-
 	
+	if progress_equal(progress, 0.333):
+		model.attack(true)
+
 func special():
 	if state != State.IDLE:
 		return
@@ -119,6 +120,9 @@ func special():
 
 func special_process(progress: float) -> void:
 	pass
+
+func progress_equal(progress: float, target: float) -> bool:
+	return int(one_attack_duration * target) / float(one_attack_duration) == progress
 
 func damage(damage: Damage) -> void:
 	if state == State.FREEZE:

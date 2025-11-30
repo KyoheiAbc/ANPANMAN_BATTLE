@@ -80,16 +80,39 @@ func attack(finish: bool) -> void:
 	punch(finish)
 
 
+func switch_right_left() -> void:
+	var rotation = arms[0].rotation_degrees.x
+	arms[0].rotation_degrees.x = arms[1].rotation_degrees.x
+	arms[1].rotation_degrees.x = rotation
+
+	rotation = legs[0].rotation_degrees.x
+	legs[0].rotation_degrees.x = legs[1].rotation_degrees.x
+	legs[1].rotation_degrees.x = rotation
+
+	var scale = arms[0].scale
+	arms[0].scale = arms[1].scale
+	arms[1].scale = scale
+
+	scale = legs[0].scale
+	legs[0].scale = legs[1].scale
+	legs[1].scale = scale
+
+var right: bool = true
+
 func punch(finish: bool) -> void:
 	idle()
 	if finish:
 		all_rotation_x(45)
 		arms[0].rotation_degrees.x = 90
 		arms[0].scale = Vector3.ONE * 1.5
+		if not right:
+			switch_right_left()
+		right = not right
 	else:
 		all_rotation_x(-45)
 		arms[0].rotation_degrees.x = -90
-
+		if not right:
+			switch_right_left()
 
 func kick(finish: bool) -> void:
 	idle()

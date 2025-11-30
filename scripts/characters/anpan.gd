@@ -13,12 +13,16 @@ func special_process(progress: float) -> void:
 		add_child(attack_areas[-1])
 		attack_areas[-1].position.x = size.x * 0.75 * direction
 	elif 0.333 < progress and progress < 1.0:
-		model.attack(true)
 		attack_areas[-1].process()
 	elif progress == 1.0:
 		var attack_area = attack_areas.pop_back()
 		attack_area.queue_free()
 	
+	if progress_equal(progress, 0.333):
+		print("Special attack progress reached 0.333")
+		model.attack(true)
+	else:
+		print("Special attack progress: ", progress)
 	enable_physics = false
 	position.x += direction * 10
 
