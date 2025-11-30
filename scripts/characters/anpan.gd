@@ -20,7 +20,7 @@ func special_process(progress: float) -> void:
 		attack_area.queue_free()
 	
 	enable_physics = false
-	position.x += direction * walk_step * 1.5
+	position.x += direction * 10
 
 class AnpanModel extends Model:
 	func attack(finish: bool) -> void:

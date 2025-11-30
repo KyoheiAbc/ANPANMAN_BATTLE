@@ -17,18 +17,19 @@ var characters: Array[Character] = []
 var model: Model
 
 var hp: int = 100
-var walk_step: float = 8.0
 var jump_power: float = 32.0
-var velocity_x_decay: float = 0.8
 var custom_gravity: float = 2.0
+var walk_acceleration: float = 2.0
+var max_x_velocity: float = 16.0
+var velocity_x_decay: float = 0.8
 var one_attack_duration: int = 24
 var special_duration: int = 60
 
 var attack_damages: Array[Damage] = [
-	Damage.new(self, 10, Vector2(2, -8), 20),
-	Damage.new(self, 10, Vector2(4, -16), 20),
-	Damage.new(self, 30, Vector2(8, -32), 20),
-	Damage.new(self, 30, Vector2(16, -64), 20),
+	Damage.new(self, 10, Vector2(2, -8), 20, 3),
+	Damage.new(self, 10, Vector2(4, -16), 20, 6),
+	Damage.new(self, 30, Vector2(8, -32), 20, 9),
+	Damage.new(self, 30, Vector2(16, -64), 20, 12),
 ]
 
 enum State {
@@ -60,7 +61,11 @@ func walk(walk_direction: int) -> void:
 	if state != State.IDLE:
 		return
 	direction = walk_direction
-	position.x += direction * walk_step
+	add_x_velocity(direction * walk_acceleration)
+
+func add_x_velocity(x_velocity: float) -> void:
+	velocity.x += x_velocity
+	velocity.x = clamp(velocity.x, -max_x_velocity, max_x_velocity)
 
 func is_jumping() -> bool:
 	return position.y + size.y / 2 < 0
@@ -120,7 +125,7 @@ func damage(damage: Damage) -> void:
 		return
 	if damage.character == characters[0]:
 		if Main.FREEZE_COUNT < 0:
-			Main.FREEZE_COUNT = 5
+			Main.FREEZE_COUNT = damage.hit_stop
 	idle()
 	state = State.FREEZE
 	hp -= damage.amount
@@ -141,7 +146,8 @@ func process():
 
 	frame_count -= 1
 	if frame_count < 0:
-		idle()
+		if state != State.IDLE:
+			idle()
 
 	physics_process()
 
@@ -153,6 +159,7 @@ func idle() -> void:
 	state = State.IDLE
 
 	enable_physics = true
+	velocity = Vector2.ZERO
 
 	attack_counts.clear()
 
@@ -187,15 +194,18 @@ class Damage:
 	var vector: Vector2
 	var duration: int
 
-	func _init(character: Character, amount: int, vector: Vector2, duration: int):
+	var hit_stop: int
+
+	func _init(character: Character, amount: int, vector: Vector2, duration: int, hit_stop: int):
 		self.character = character
 		self.amount = amount
 		self.vector = vector
 		self.duration = duration
 		self.vector.x *= self.character.direction
+		self.hit_stop = hit_stop
 
 	func duplicate() -> Damage:
-			return Damage.new(character, amount, vector, duration)
+			return Damage.new(character, amount, vector, duration, hit_stop)
 
 class AttackArea extends Area2D:
 	var character: Character

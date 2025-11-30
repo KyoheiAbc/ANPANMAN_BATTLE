@@ -47,7 +47,7 @@ func process():
 
 	var diff_x = abs(character.position.x / 100 - position.x)
 	if diff_x > 0.01:
-		walk(Time.get_ticks_msec() / 1000.0 * diff_x * 16)
+		walk(Time.get_ticks_msec() / 800.0)
 	else:
 		idle()
 
