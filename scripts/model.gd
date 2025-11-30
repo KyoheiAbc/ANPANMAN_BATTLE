@@ -79,21 +79,24 @@ func jump() -> void:
 func attack(finish: bool) -> void:
 	punch(finish)
 
+
 func punch(finish: bool) -> void:
 	idle()
 	if finish:
-		all_rotation_x(90)
-		arms[0].scale = Vector3.ONE * 2
+		all_rotation_x(45)
+		arms[0].rotation_degrees.x = 90
+		arms[0].scale = Vector3.ONE * 1.5
 	else:
+		all_rotation_x(-45)
 		arms[0].rotation_degrees.x = -90
 
 
 func kick(finish: bool) -> void:
 	idle()
 	if finish:
-		all_rotation_x(90)
-		for arm in arms:
-			arm.rotation_degrees.x = -90
+		all_rotation_x(45)
+		legs[1].rotation_degrees.x = 90
+		legs[1].scale = Vector3.ONE * 1.2
 	else:
 		all_rotation_x(-45)
 		legs[1].rotation_degrees.x = -90
