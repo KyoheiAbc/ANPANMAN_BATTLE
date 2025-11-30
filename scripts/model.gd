@@ -100,3 +100,17 @@ func kick(finish: bool) -> void:
 	else:
 		all_rotation_x(-45)
 		legs[1].rotation_degrees.x = -90
+
+func hit(finish: bool) -> void:
+	idle()
+	if finish:
+		for arm in arms:
+			arm.rotation_degrees.x = 45
+			arm.scale = Vector3.ONE * 1.2
+		for leg in legs:
+			leg.rotation_degrees.x = -45
+	else:
+		for arm in arms:
+			arm.rotation_degrees.x = 225
+		for leg in legs:
+			leg.rotation_degrees.x = 45

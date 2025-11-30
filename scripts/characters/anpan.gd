@@ -2,6 +2,7 @@ class_name Anpan
 extends Character
 
 func _init(characters: Array[Character]) -> void:
+	one_attack_duration *= 1
 	super._init(characters, Vector2(100, 150))
 	
 func special_process(progress: float) -> void:
@@ -22,4 +23,5 @@ func special_process(progress: float) -> void:
 	position.x += direction * walk_step * 1.5
 
 class AnpanModel extends Model:
-	pass
+	func attack(finish: bool) -> void:
+		punch(finish)
