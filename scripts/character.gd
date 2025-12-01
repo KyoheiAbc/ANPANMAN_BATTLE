@@ -134,8 +134,8 @@ func process():
 				attack_process(float(one_attack_duration - attack_counts[i]) / one_attack_duration, i + 1)
 			attack_counts[i] -= 1
 			if attack_counts[i] >= 0:
-				return
-		frame_count = -1
+				break
+			frame_count = -1
 	elif state == State.SPECIAL:
 		special_process(float(special_duration - frame_count) / special_duration)
 
