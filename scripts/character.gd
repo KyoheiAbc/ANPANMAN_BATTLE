@@ -10,8 +10,6 @@ var attack_areas: Array[AttackArea] = []
 
 var frame_count: int = -1
 
-var enable_physics: bool = true
-
 var characters: Array[Character] = []
 
 var model: Model
@@ -97,7 +95,6 @@ func attack():
 func attack_process(progress: float, combo_count: int) -> void:
 	if progress == 0:
 		model.attack(false)
-		enable_physics = false
 		attack_areas.append(AttackArea.new(self, size / 2, attack_damages[combo_count - 1].duplicate()))
 		add_child(attack_areas[-1])
 		attack_areas[-1].position.x = size.x * 0.75 * direction
@@ -162,7 +159,6 @@ func process():
 func idle() -> void:
 	state = State.IDLE
 
-	enable_physics = true
 	velocity = Vector2.ZERO
 
 	attack_counts.clear()
@@ -174,9 +170,6 @@ func idle() -> void:
 	model.idle()
 
 func physics_process():
-	if not enable_physics:
-		return
-
 	position += velocity
 
 	velocity.x *= velocity_x_decay
