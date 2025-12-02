@@ -6,6 +6,7 @@ var rival: Character
 var input_controller: InputController = InputController.new()
 
 const DEBUG: bool = true
+static var HIT_STOP_COUNT: int = 0
 
 func _ready():
 	camera()
@@ -40,6 +41,12 @@ func _ready():
 	)
 
 func _process(delta: float) -> void:
+	if HIT_STOP_COUNT > 0:
+		HIT_STOP_COUNT -= 1
+		player.model.visible = true
+		rival.model.visible = true
+		return
+
 	if input_controller.drag.y < -64:
 		player.jump()
 	if input_controller.drag.x > 8:
@@ -49,6 +56,22 @@ func _process(delta: float) -> void:
 
 	player.process()
 	rival.process()
+
+func _input(input: InputEvent) -> void:
+	if not DEBUG:
+		return
+	if input is InputEventKey:
+		if input.pressed:
+			if input.keycode == KEY_W:
+				player.jump()
+			if input.keycode == KEY_A:
+				player.walk(-1)
+			if input.keycode == KEY_D:
+				player.walk(1)
+			if input.keycode == KEY_ENTER:
+				player.special()
+			if input.keycode == KEY_SHIFT:
+				player.attack()
 
 func camera() -> void:
 	RenderingServer.set_default_clear_color(Color.from_hsv(0.5, 1, 0.8))
