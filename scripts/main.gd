@@ -1,27 +1,32 @@
 class_name Main
 extends Node
 
-var characters: Array[Character] = []
+var player: Character
+var rival: Character
 var input_controller: InputController = InputController.new()
 
-static var FREEZE_COUNT: int = 0
+const DEBUG: bool = true
 
 func _ready():
 	camera()
 	stage()
 
-	characters.append(Anpan.new(characters))
-	characters.append(Baikin.new(characters))
-	for character in characters:
-		add_child(character)
-	characters[0].position.x = -200
-	characters[1].position.x = 200
+	player = Anpan.new()
+	add_child(player)
+	player.position.x = -200
+
+	rival = Baikin.new()
+	add_child(rival)
+	rival.position.x = 200
+
+	player.rival = rival
+	rival.rival = player
 
 	add_child(input_controller)
 	input_controller.rect.end.x = ProjectSettings.get_setting("display/window/size/viewport_width") * 0.75
 	input_controller.signal_pressed.connect(func(position: Vector2) -> void:
 		if position.y < ProjectSettings.get_setting("display/window/size/viewport_height") / 2:
-			characters[0].jump()
+			player.jump()
 	)
 
 	var input_controller_pressed = InputController.new()
@@ -29,28 +34,21 @@ func _ready():
 	input_controller_pressed.rect.position.x = ProjectSettings.get_setting("display/window/size/viewport_width") * 0.75
 	input_controller_pressed.signal_pressed.connect(func(position: Vector2) -> void:
 		if position.y > ProjectSettings.get_setting("display/window/size/viewport_height") / 2:
-			characters[0].attack()
+			player.attack()
 		else:
-			characters[0].special()
+			player.special()
 	)
 
 func _process(delta: float) -> void:
-	FREEZE_COUNT -= 1
-	if FREEZE_COUNT >= 0:
-		for character in characters:
-			character.model.visible = true
-		return
-
 	if input_controller.drag.y < -64:
-		characters[0].jump()
+		player.jump()
 	if input_controller.drag.x > 8:
-		characters[0].walk(1)
+		player.walk(1)
 	if input_controller.drag.x < -8:
-		characters[0].walk(-1)
+		player.walk(-1)
 
-	for character in characters:
-		character.process()
-
+	player.process()
+	rival.process()
 
 func camera() -> void:
 	RenderingServer.set_default_clear_color(Color.from_hsv(0.5, 1, 0.8))
@@ -79,12 +77,13 @@ func stage() -> void:
 	stage.material_override.albedo_color = Color(0, 0.5, 0)
 
 class CustomCollisionShape2D extends CollisionShape2D:
+	var color_rect: ColorRect
 	func _init(size: Vector2):
 		self.shape = RectangleShape2D.new()
 		self.shape.size = size
 
-		var color_rect = ColorRect.new()
+		color_rect = ColorRect.new()
 		add_child(color_rect)
-		color_rect.color = Color.from_hsv(randf(), 1, 1, 0.1)
+		color_rect.color = Color.from_hsv(randf(), 1, 1, 0.3 if Main.DEBUG else 0)
 		color_rect.size = size
 		color_rect.position = - size / 2
