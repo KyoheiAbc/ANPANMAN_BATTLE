@@ -1,112 +1,30 @@
 class_name Main
 extends Node
 
-var player: Character
-var rival: Character
-var input_controller: InputController = InputController.new()
+static var NODE: Node = null
 
-const DEBUG: bool = true
-static var HIT_STOP_COUNT: int = 0
+func _init() -> void:
+	NODE = self
+	NODE.add_child(Main.Initial.new())
 
-func _ready():
-	camera()
-	stage()
+class Initial extends Node:
+	func _init() -> void:
+		RenderingServer.set_default_clear_color(Color.from_hsv(0.15, 0.5, 1))
+		var label = Main.label_new()
+		add_child(label)
+		label.text = "ANPANMAN BATTLE"
 
-	player = Baikin.new()
-	add_child(player)
-	player.position.x = -200
+	func _input(event: InputEvent) -> void:
+		if event is InputEventScreenTouch and event.pressed:
+			self.queue_free()
+			Main.NODE.add_child(Game.new())
 
-	rival = Anpan.new()
-	add_child(rival)
-	rival.position.x = 200
 
-	player.rival = rival
-	rival.rival = player
-
-	add_child(input_controller)
-	input_controller.rect.end.x = ProjectSettings.get_setting("display/window/size/viewport_width") * 0.75
-	input_controller.signal_pressed.connect(func(position: Vector2) -> void:
-		if position.y < ProjectSettings.get_setting("display/window/size/viewport_height") / 2:
-			player.jump()
-	)
-
-	var input_controller_pressed = InputController.new()
-	add_child(input_controller_pressed)
-	input_controller_pressed.rect.position.x = ProjectSettings.get_setting("display/window/size/viewport_width") * 0.75
-	input_controller_pressed.signal_pressed.connect(func(position: Vector2) -> void:
-		if position.y > ProjectSettings.get_setting("display/window/size/viewport_height") / 2:
-			player.attack()
-		else:
-			player.special()
-	)
-
-func _process(delta: float) -> void:
-	if HIT_STOP_COUNT > 0:
-		HIT_STOP_COUNT -= 1
-		player.model.visible = true
-		rival.model.visible = true
-		return
-
-	if input_controller.drag.y < -64:
-		player.jump()
-	if input_controller.drag.x > 8:
-		player.walk(1)
-	if input_controller.drag.x < -8:
-		player.walk(-1)
-
-	player.process()
-	rival.process()
-
-func _input(input: InputEvent) -> void:
-	if not DEBUG:
-		return
-	if input is InputEventKey:
-		if input.pressed:
-			if input.keycode == KEY_W:
-				player.jump()
-			if input.keycode == KEY_A:
-				player.walk(-1)
-			if input.keycode == KEY_D:
-				player.walk(1)
-			if input.keycode == KEY_ENTER:
-				player.special()
-			if input.keycode == KEY_SHIFT:
-				player.attack()
-
-func camera() -> void:
-	RenderingServer.set_default_clear_color(Color.from_hsv(0.5, 1, 0.8))
-
-	var window = Vector2(ProjectSettings.get_setting("display/window/size/viewport_width"), ProjectSettings.get_setting("display/window/size/viewport_height"))
-
-	var camera_3d = Camera3D.new()
-	add_child(camera_3d)
-	camera_3d.position = Vector3(0, 0, 8)
-	camera_3d.projection = Camera3D.PROJECTION_ORTHOGONAL
-	camera_3d.size = 8
-	var light = DirectionalLight3D.new()
-	camera_3d.add_child(light)
-	light.shadow_enabled = false
-
-	var camera_2d = Camera2D.new()
-	add_child(camera_2d)
-
-func stage() -> void:
-	var stage = MeshInstance3D.new()
-	stage.mesh = QuadMesh.new()
-	stage.mesh.size = Vector2(16, 4)
-	stage.position = Vector3(0, -2, -1)
-	add_child(stage)
-	stage.material_override = StandardMaterial3D.new()
-	stage.material_override.albedo_color = Color(0, 0.5, 0)
-
-class CustomCollisionShape2D extends CollisionShape2D:
-	var color_rect: ColorRect
-	func _init(size: Vector2):
-		self.shape = RectangleShape2D.new()
-		self.shape.size = size
-
-		color_rect = ColorRect.new()
-		add_child(color_rect)
-		color_rect.color = Color.from_hsv(randf(), 1, 1, 0.3 if Main.DEBUG else 0)
-		color_rect.size = size
-		color_rect.position = - size / 2
+static func label_new() -> Label:
+	var label = Label.new()
+	label.size = Vector2(ProjectSettings.get_setting("display/window/size/viewport_width"), ProjectSettings.get_setting("display/window/size/viewport_height"))
+	label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	label.add_theme_font_size_override("font_size", 128)
+	label.add_theme_color_override("font_color", Color.from_hsv(0, 0.75, 1))
+	return label
