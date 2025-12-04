@@ -15,7 +15,7 @@ var model: Model
 
 var attacks: Array[Attack] = []
 var special_cool_time: int = 0
-var special_cool_time_max: int = 60
+var special_cool_time_max: int = 90
 var hp_max: int = 100
 var walk_acceleration: float = 0.8
 var jump_velocity: float = -16
@@ -31,10 +31,10 @@ enum State {
 var state: State = State.IDLE
 
 var attack_infos: Array[Attack.Info] = [
-	Attack.Info.new([8, 8, 8], Vector2(96, 0), Vector2(64, 64), 10, Vector2(0, -4), 20, 10),
-	Attack.Info.new([8, 8, 8], Vector2(96, 0), Vector2(64, 64), 10, Vector2(2, -8), 20, 10),
-	Attack.Info.new([8, 8, 24], Vector2(96, 0), Vector2(64, 64), 20, Vector2(16, -16), 20, 10),
-	Attack.Info.new([16, 60, 32], Vector2(96, 0), Vector2(64, 64), 30, Vector2(16, -32), 20, 10),
+	Attack.Info.new([16, 2, 8], Vector2(50, 0), Vector2(100, 100), 10, Vector2(0, -4), 16, 16),
+	Attack.Info.new([16, 2, 8], Vector2(50, 0), Vector2(100, 100), 10, Vector2(0, -8), 16, 16),
+	Attack.Info.new([16, 2, 16], Vector2(50, 0), Vector2(100, 100), 20, Vector2(16, -16), 16, 16),
+	Attack.Info.new([32, 60, 32], Vector2(50, 0), Vector2(100, 100), 30, Vector2(16, -32), 20, 32),
 ]
 
 
@@ -103,6 +103,15 @@ func damage(attack: Attack) -> void:
 	velocity.x *= attack.direction
 	Game.HIT_STOP_COUNT = attack.info.hit_stop
 
+func collision() -> void:
+	if state != State.IDLE:
+		return
+	idle()
+	state = State.FREEZE
+	frame_count = 15
+	velocity.x = - direction * 8
+	velocity.y = -8
+
 func special():
 	if state != State.IDLE:
 		return
@@ -140,6 +149,11 @@ func process():
 
 	if state == State.IDLE:
 		look_at_rival()
+
+	for area in get_overlapping_areas():
+		if area == rival:
+			collision()
+			rival.collision()
 	
 	physics_process()
 
@@ -155,6 +169,8 @@ func idle() -> void:
 	for attack in attacks:
 		attack.queue_free()
 	attacks.clear()
+
+	model.idle()
 
 func look_at_rival() -> void:
 	direction = 1 if position.x < rival.position.x else -1
@@ -219,6 +235,12 @@ class Attack extends Area2D:
 	func process() -> bool:
 		if frame_count < 0:
 			return false
+		if frame_count == info.counts[0] + info.counts[1] + info.counts[2]:
+			character.model.prepare_attack()
+		elif frame_count == info.counts[1] + info.counts[2]:
+			character.model.finish_attack()
+		elif frame_count == 0:
+			character.model.idle()
 		character.unique_process(self)
 		frame_count -= 1
 		if info.counts[2] < frame_count and frame_count < info.counts[1] + info.counts[2]:

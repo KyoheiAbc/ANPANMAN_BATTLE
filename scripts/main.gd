@@ -9,7 +9,7 @@ static var WINDOW: Vector2 = Vector2(
 
 func _init() -> void:
 	NODE = self
-	NODE.add_child(Main.Initial.new())
+	NODE.add_child(Game.new())
 
 class Initial extends Node:
 	func _init() -> void:

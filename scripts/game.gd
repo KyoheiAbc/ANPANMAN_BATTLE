@@ -119,7 +119,7 @@ func ready_go() -> void:
 	rival.process()
 	add_child(ready_go_timer)
 	ready_go_timer.one_shot = true
-	ready_go_timer.start(1.0)
+	ready_go_timer.start(0.5)
 	await ready_go_timer.timeout
 	label.text = "GO!"
 	ready_go_timer.start(0.5)

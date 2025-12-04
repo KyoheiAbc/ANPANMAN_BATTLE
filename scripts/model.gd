@@ -36,6 +36,20 @@ func process():
 	else:
 		visible = true
 
+	if character.state == Character.State.ATTACKING or character.state == Character.State.SPECIAL:
+		update_position()
+		return
+
+	if character.state == Character.State.IDLE:
+		if character.is_jumping():
+			jump()
+		else:
+			var diff_x = abs(character.position.x / 100 - position.x)
+			if diff_x > 0.01:
+				walk(Time.get_ticks_msec() / 800.0)
+			else:
+				idle()
+
 	update_position()
 
 
@@ -62,7 +76,11 @@ func jump() -> void:
 	all_rotation_x(30)
 
 
-func punch() -> void:
+func prepare_attack() -> void:
+	all_rotation_x(-45)
+	arms[0].rotation_degrees.x = -90
+
+func finish_attack() -> void:
 	all_rotation_x(45)
 	arms[0].rotation_degrees.x = 90
 	arms[0].scale = Vector3.ONE * 1.5
