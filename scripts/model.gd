@@ -8,6 +8,11 @@ var legs: Array[Node3D] = []
 
 var character: Character
 
+const MODELS: Array[PackedScene] = [
+	preload("res://assets/a.gltf"),
+	preload("res://assets/b.gltf"),
+]
+
 
 func _init(character: Character) -> void:
 	self.character = character

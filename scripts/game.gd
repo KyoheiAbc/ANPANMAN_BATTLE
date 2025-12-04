@@ -14,11 +14,15 @@ func _ready():
 	camera()
 	stage()
 
-	player = Anpan.new()
+	if Main.PLAYER_INDEX == 0:
+		player = Anpan.new()
+		rival = Baikin.new()
+	else:
+		player = Baikin.new()
+		rival = Anpan.new()
 	add_child(player)
 	player.position.x = -400
 
-	rival = Baikin.new()
 	add_child(rival)
 	rival.position.x = 400
 
@@ -48,6 +52,12 @@ func _ready():
 	)
 
 func _process(delta: float) -> void:
+	if rival.hp <= 0 or player.hp <= 0:
+		set_process(false)
+		self.queue_free()
+		Main.NODE.add_child(Main.Initial.new())
+		return
+
 	if HIT_STOP_COUNT > 0:
 		HIT_STOP_COUNT -= 1
 		player.model.visible = true

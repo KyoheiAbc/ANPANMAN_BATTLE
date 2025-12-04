@@ -64,3 +64,8 @@ static func move_value(array_2d: Array, value, delta: Vector2) -> bool:
 static func vector2_to_value(array_2d: Array, vector2: Vector2) -> int:
 	var size = get_size(array_2d)
 	return int(vector2.y) * int(size.x) + int(vector2.x)
+static func value_to_vector2(array_2d: Array, value: int) -> Vector2:
+	var size = get_size(array_2d)
+	var y = int(value / size.x)
+	var x = value % int(size.x)
+	return Vector2(x, y)

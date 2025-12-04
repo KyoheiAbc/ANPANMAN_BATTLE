@@ -7,9 +7,11 @@ static var WINDOW: Vector2 = Vector2(
 	ProjectSettings.get_setting("display/window/size/viewport_height")
 )
 
+static var PLAYER_INDEX: int = 0
+
 func _init() -> void:
 	NODE = self
-	NODE.add_child(Game.new())
+	NODE.add_child(Initial.new())
 
 class Initial extends Node:
 	func _init() -> void:
@@ -21,7 +23,7 @@ class Initial extends Node:
 	func _input(event: InputEvent) -> void:
 		if event is InputEventScreenTouch and event.pressed:
 			self.queue_free()
-			Main.NODE.add_child(Game.new())
+			Main.NODE.add_child(Select.new())
 
 
 static func label_new() -> Label:
