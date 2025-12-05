@@ -16,7 +16,7 @@ var model: Model
 var attacks: Array[Attack] = []
 var special_cool_time: int = 0
 var special_cool_time_max: int = 90
-var hp_max: int = 100
+var hp_max: int = 10
 var walk_acceleration: float = 0.8
 var jump_velocity: float = -16
 var friction: float = 0.92

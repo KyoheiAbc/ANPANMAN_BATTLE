@@ -6,6 +6,11 @@ var bot: Bot
 var input_controller: InputController = InputController.new()
 var hp_sliders: Array[Game.GameHSlider] = []
 
+var game_over: bool = false
+var game_over_timer: float = 0.0
+var result_label: Label = null
+var is_player_winner: bool = false
+
 func _ready():
 	camera()
 	stage()
@@ -36,6 +41,8 @@ func _ready():
 	add_child(input_controller)
 	input_controller.rect.end.x = ProjectSettings.get_setting("display/window/size/viewport_width") * 0.75
 	input_controller.signal_pressed.connect(func(position: Vector2) -> void:
+		if game_over:
+			return
 		if position.y < ProjectSettings.get_setting("display/window/size/viewport_height") / 2:
 			player.jump()
 	)
@@ -44,6 +51,8 @@ func _ready():
 	add_child(input_controller_pressed)
 	input_controller_pressed.rect.position.x = ProjectSettings.get_setting("display/window/size/viewport_width") * 0.75
 	input_controller_pressed.signal_pressed.connect(func(position: Vector2) -> void:
+		if game_over:
+			return
 		if position.y > ProjectSettings.get_setting("display/window/size/viewport_height") / 2:
 			player.attack()
 		else:
@@ -51,28 +60,58 @@ func _ready():
 	)
 
 func _process(delta: float) -> void:
+	if game_over:
+		game_over_timer += delta
+		if game_over_timer >= 1.0 and result_label == null:
+			_show_result()
+
 	if Main.HIT_STOP_COUNT > 0:
 		Main.HIT_STOP_COUNT -= 1
 		player.model.visible = true
 		rival.model.visible = true
 		return
 
-	if input_controller.drag.y < -64:
-		player.jump()
-	if input_controller.drag.x > 8:
-		player.walk(1)
-	if input_controller.drag.x < -8:
-		player.walk(-1)
+	if not game_over:
+		if input_controller.drag.y < -64:
+			player.jump()
+		if input_controller.drag.x > 8:
+			player.walk(1)
+		if input_controller.drag.x < -8:
+			player.walk(-1)
 
 	player.process()
 	rival.process()
 
-	bot.process()
+	if not game_over:
+		bot.process()
 
 	print("Player HP: %d, Rival HP: %d" % [player.hp, rival.hp])
 
 	hp_sliders[0].value = player.hp / float(player.hp_max) * hp_sliders[0].max_value
 	hp_sliders[1].value = rival.hp / float(rival.hp_max) * hp_sliders[1].max_value
+
+	# Check for game over
+	if player.hp <= 0 or rival.hp <= 0:
+		Main.HIT_STOP_COUNT = 0
+		_start_game_over(rival.hp <= 0)
+
+func _start_game_over(player_wins: bool) -> void:
+	game_over = true
+	is_player_winner = player_wins
+	Engine.max_fps = 30
+
+func _show_result() -> void:
+	result_label = Main.label_new()
+	result_label.text = "YOU WIN" if is_player_winner else "YOU LOSE"
+	add_child(result_label)
+	result_label.position = Vector2.ZERO - result_label.size / 2
+
+func _input(event: InputEvent) -> void:
+	if game_over and result_label != null:
+		if event is InputEventScreenTouch and event.pressed:
+			Engine.max_fps = 60
+			queue_free()
+			Main.NODE.add_child(Select.new())
 
 func camera() -> void:
 	RenderingServer.set_default_clear_color(Color.from_hsv(0.5, 1, 0.8))
