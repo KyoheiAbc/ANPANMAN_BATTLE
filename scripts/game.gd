@@ -4,14 +4,11 @@ var player: Character
 var rival: Character
 var bot: Bot
 var input_controller: InputController = InputController.new()
+var hp_sliders: Array[Game.GameHSlider] = []
 
 func _ready():
 	camera()
 	stage()
-
-	var slider = GameHSlider.new(Vector2(600, 30), Color(1, 0, 0))
-	slider.position = Vector2(-700, -380)
-	add_child(slider)
 
 	player = Character.character_new(Main.INDEXES[0])
 	rival = Character.character_new(Main.INDEXES[1])
@@ -23,6 +20,14 @@ func _ready():
 
 	player.rival = rival
 	rival.rival = player
+
+	hp_sliders.append(Game.GameHSlider.new(Vector2(700, 30), Color(0, 1, 0)))
+	hp_sliders[0].position = Vector2(-750, -380)
+	add_child(hp_sliders[0])
+
+	hp_sliders.append(Game.GameHSlider.new(Vector2(700, 30), Color(0, 1, 0)))
+	hp_sliders[1].position = Vector2(50, -380)
+	add_child(hp_sliders[1])
 
 	bot = Bot.new(rival, player)
 	add_child(bot)
@@ -63,6 +68,11 @@ func _process(delta: float) -> void:
 	rival.process()
 
 	bot.process()
+
+	print("Player HP: %d, Rival HP: %d" % [player.hp, rival.hp])
+
+	hp_sliders[0].value = player.hp / float(player.hp_max) * hp_sliders[0].max_value
+	hp_sliders[1].value = rival.hp / float(rival.hp_max) * hp_sliders[1].max_value
 
 func camera() -> void:
 	RenderingServer.set_default_clear_color(Color.from_hsv(0.5, 1, 0.8))
