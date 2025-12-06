@@ -12,7 +12,6 @@ var result_label: Label = null
 var is_player_winner: bool = false
 
 func _ready():
-	camera()
 	stage()
 
 	player = Character.character_new(Main.PLAYER_INDEX)
@@ -111,22 +110,6 @@ func _input(event: InputEvent) -> void:
 			queue_free()
 			Main.NODE.add_child(Main.Initial.new())
 
-func camera() -> void:
-	RenderingServer.set_default_clear_color(Color.from_hsv(0.5, 1, 0.8))
-
-	var window = Vector2(ProjectSettings.get_setting("display/window/size/viewport_width"), ProjectSettings.get_setting("display/window/size/viewport_height"))
-
-	var camera_3d = Camera3D.new()
-	add_child(camera_3d)
-	camera_3d.position = Vector3(0, 0, 8)
-	camera_3d.projection = Camera3D.PROJECTION_ORTHOGONAL
-	camera_3d.size = 8
-	var light = DirectionalLight3D.new()
-	camera_3d.add_child(light)
-	light.shadow_enabled = false
-
-	var camera_2d = Camera2D.new()
-	add_child(camera_2d)
 
 func stage() -> void:
 	var stage = MeshInstance3D.new()
