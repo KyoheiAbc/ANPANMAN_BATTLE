@@ -41,7 +41,7 @@ func _ready() -> void:
 	add_child(button)
 
 
-func create_sprites() -> Array[Sprite2D]:
+static func create_sprites() -> Array[Sprite2D]:
 	var sprites: Array[Sprite2D] = []
 	for i in Main.SPRITES.size():
 		var sprite := Sprite2D.new()
@@ -83,3 +83,44 @@ func _process(_delta: float) -> void:
 	model.rotation_degrees.y = -150
 	model.scale = Vector3.ONE * 3
 	add_child(model)
+
+
+class Arcade extends Node:
+	func _ready() -> void:
+		var sprites: Array[Sprite2D] = Select.create_sprites()
+		for sprite in sprites:
+			add_child(sprite)
+			sprite.modulate = Color(0.5, 0.5, 0.5, 0.5)
+
+		for i in 2:
+			var cursor := ColorRect.new()
+			cursor.color = Color.RED if i == 0 else Color.BLUE
+			cursor.size = Vector2(150, 150)
+			cursor.z_index = -1
+			add_child(cursor)
+			if i == 0:
+				cursor.position = sprites[Main.PLAYER_INDEX].position - cursor.size / 2
+			else:
+				cursor.position = sprites[Main.RIVAL_INDEXES[0]].position - cursor.size / 2
+
+		sprites[Main.PLAYER_INDEX].modulate = Color(1, 1, 1, 1)
+
+		for i in Main.RIVAL_INDEXES:
+			sprites[i].modulate = Color(1, 1, 1, 1)
+	
+		var model: Node3D = null
+		model = Main.MODELS[1 if Main.PLAYER_INDEX == 1 else 0].instantiate()
+		model.position = Vector3(-5.5, -1.8, 0)
+		model.rotation_degrees.y = -150
+		model.scale = Vector3.ONE * 3
+		add_child(model)
+
+		model = Main.MODELS[1 if Main.RIVAL_INDEXES[0] == 1 else 0].instantiate()
+		model.position = Vector3(5.5, -1.8, 0)
+		model.rotation_degrees.y = 150
+		model.scale = Vector3.ONE * 3
+		add_child(model)
+
+		await get_tree().create_timer(1.5).timeout
+		Main.NODE.add_child(Game.new())
+		self.queue_free()
