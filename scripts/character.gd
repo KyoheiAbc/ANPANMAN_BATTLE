@@ -47,6 +47,10 @@ static func character_new(index: int) -> Character:
 		1:
 			character = Baikin.new()
 			character.model = Baikin.BaikinModel.new(character, model_scene)
+		_:
+			character = Anpan.new()
+			character.model = Anpan.AnpanModel.new(character, model_scene)
+
 	character.add_child(character.model)
 	return character
 
