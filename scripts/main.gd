@@ -1,10 +1,19 @@
 class_name Main
 extends Node
 
+const WINDOW_WIDTH_SETTING := "display/window/size/viewport_width"
+const WINDOW_HEIGHT_SETTING := "display/window/size/viewport_height"
+const INITIAL_LABEL_TEXT := "ANPANMAN BATTLE"
+const CAMERA3D_POSITION := Vector3(0, 0, 8)
+const CAMERA3D_SIZE := 8
+const CLEAR_COLOR := Color(0, 0.5, 1)
+const LABEL_FONT_SIZE := 128
+const LABEL_FONT_COLOR := Color(1, 1, 0)
+
 static var NODE: Node = null
 static var WINDOW: Vector2 = Vector2(
-	ProjectSettings.get_setting("display/window/size/viewport_width"),
-	ProjectSettings.get_setting("display/window/size/viewport_height")
+	ProjectSettings.get_setting(WINDOW_WIDTH_SETTING),
+	ProjectSettings.get_setting(WINDOW_HEIGHT_SETTING)
 )
 
 static var PLAYER_INDEX: int = 0
@@ -42,7 +51,7 @@ class Initial extends Node:
 	func _init() -> void:
 		var label = Main.label_new()
 		add_child(label)
-		label.text = "ANPANMAN BATTLE"
+		label.text = INITIAL_LABEL_TEXT
 
 	func _input(event: InputEvent) -> void:
 		if event is InputEventScreenTouch and event.pressed:
@@ -50,13 +59,13 @@ class Initial extends Node:
 			Main.NODE.add_child(Select.new())
 
 func camera() -> void:
-	RenderingServer.set_default_clear_color(Color(0, 0.5, 1))
+	RenderingServer.set_default_clear_color(CLEAR_COLOR)
 
 	var camera_3d = Camera3D.new()
 	add_child(camera_3d)
-	camera_3d.position = Vector3(0, 0, 8)
+	camera_3d.position = CAMERA3D_POSITION
 	camera_3d.projection = Camera3D.PROJECTION_ORTHOGONAL
-	camera_3d.size = 8
+	camera_3d.size = CAMERA3D_SIZE
 	var light = DirectionalLight3D.new()
 	camera_3d.add_child(light)
 	light.shadow_enabled = false
@@ -70,6 +79,6 @@ static func label_new() -> Label:
 	label.size = Main.WINDOW
 	label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
 	label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	label.add_theme_font_size_override("font_size", 128)
-	label.add_theme_color_override("font_color", Color(1, 1, 0))
+	label.add_theme_font_size_override("font_size", LABEL_FONT_SIZE)
+	label.add_theme_color_override("font_color", LABEL_FONT_COLOR)
 	return label

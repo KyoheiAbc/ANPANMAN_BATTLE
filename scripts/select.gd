@@ -1,6 +1,22 @@
 class_name Select extends Node
 
 const CELL_SIZE := 160
+const CURSOR_SIZE := Vector2(150, 150)
+const CURSOR_Z_INDEX := -1
+const BUTTON_SIZE := Vector2(360, 90)
+const BUTTON_FONT_SIZE := 32
+const BUTTON_TEXT := "START"
+const BUTTON_POSITION_OFFSET := Vector2(0, 300)
+const MODEL_POS_PLAYER := Vector3(-5.5, -1.8, 0)
+const MODEL_POS_RIVAL := Vector3(5.5, -1.8, 0)
+const MODEL_ROT_PLAYER := -150
+const MODEL_ROT_RIVAL := 150
+const MODEL_SCALE := Vector3.ONE * 3
+const ARCADE_CURSOR_COLORS := [Color.RED, Color.BLUE]
+const SPRITE_MODULATE_ARCADE := Color(0.5, 0.5, 0.5, 0.5)
+const SPRITE_MODULATE_SELECTED := Color(1, 1, 1, 1)
+const ARCADE_TIMER := 1.5
+const SELECT_TIMER := 0.5
 
 var sprites: Array[Sprite2D] = []
 var cursor: ColorRect
@@ -19,18 +35,18 @@ func _ready() -> void:
 
 	cursor = ColorRect.new()
 	cursor.color = Color.RED
-	cursor.size = Vector2(150, 150)
-	cursor.z_index = -1
+	cursor.size = CURSOR_SIZE
+	cursor.z_index = CURSOR_Z_INDEX
 	add_child(cursor)
 
 	var button := Button.new()
-	button.size = Vector2(360, 90)
-	button.add_theme_font_size_override("font_size", 32)
-	button.text = "START"
-	button.position = - button.size / 2 + Vector2(0, 300)
+	button.size = BUTTON_SIZE
+	button.add_theme_font_size_override("font_size", BUTTON_FONT_SIZE)
+	button.text = BUTTON_TEXT
+	button.position = - button.size / 2 + BUTTON_POSITION_OFFSET
 	add_child(button)
 
-	await get_tree().create_timer(0.5).timeout
+	await get_tree().create_timer(SELECT_TIMER).timeout
 	button.pressed.connect(func() -> void:
 		Main.PLAYER_INDEX = Array2D.get_position_value(map, 0)
 		Main.RIVAL_INDEXES.clear()
@@ -72,7 +88,7 @@ func _input(event: InputEvent) -> void:
 			Array2D.move_value(map, 0, Vector2(0, -1))
 
 func _process(_delta: float) -> void:
-	cursor.position = sprites[Array2D.get_position_value(map, Main.PLAYER_INDEX)].position - cursor.size / 2
+	cursor.position = sprites[Array2D.get_position_value(map, Main.PLAYER_INDEX)].position - CURSOR_SIZE / 2
 
 	var idx := Array2D.get_position_value(map, 0)
 	if old_index == idx:
@@ -81,9 +97,9 @@ func _process(_delta: float) -> void:
 	if model:
 		model.queue_free()
 	model = Main.MODELS[1 if idx == 1 else 0].instantiate()
-	model.position = Vector3(-5.5, -1.8, 0)
-	model.rotation_degrees.y = -150
-	model.scale = Vector3.ONE * 3
+	model.position = MODEL_POS_PLAYER
+	model.rotation_degrees.y = MODEL_ROT_PLAYER
+	model.scale = MODEL_SCALE
 	add_child(model)
 
 
@@ -92,37 +108,37 @@ class Arcade extends Node:
 		var sprites: Array[Sprite2D] = Select.create_sprites()
 		for sprite in sprites:
 			add_child(sprite)
-			sprite.modulate = Color(0.5, 0.5, 0.5, 0.5)
+			sprite.modulate = SPRITE_MODULATE_ARCADE
 
 		for i in 2:
 			var cursor := ColorRect.new()
-			cursor.color = Color.RED if i == 0 else Color.BLUE
-			cursor.size = Vector2(150, 150)
-			cursor.z_index = -1
+			cursor.color = ARCADE_CURSOR_COLORS[i]
+			cursor.size = CURSOR_SIZE
+			cursor.z_index = CURSOR_Z_INDEX
 			add_child(cursor)
 			if i == 0:
-				cursor.position = sprites[Main.PLAYER_INDEX].position - cursor.size / 2
+				cursor.position = sprites[Main.PLAYER_INDEX].position - CURSOR_SIZE / 2
 			else:
-				cursor.position = sprites[Main.RIVAL_INDEXES[0]].position - cursor.size / 2
+				cursor.position = sprites[Main.RIVAL_INDEXES[0]].position - CURSOR_SIZE / 2
 
-		sprites[Main.PLAYER_INDEX].modulate = Color(1, 1, 1, 1)
+		sprites[Main.PLAYER_INDEX].modulate = SPRITE_MODULATE_SELECTED
 
 		for i in Main.RIVAL_INDEXES:
-			sprites[i].modulate = Color(1, 1, 1, 1)
+			sprites[i].modulate = SPRITE_MODULATE_SELECTED
 	
 		var model: Node3D = null
 		model = Main.MODELS[1 if Main.PLAYER_INDEX == 1 else 0].instantiate()
-		model.position = Vector3(-5.5, -1.8, 0)
-		model.rotation_degrees.y = -150
-		model.scale = Vector3.ONE * 3
+		model.position = MODEL_POS_PLAYER
+		model.rotation_degrees.y = MODEL_ROT_PLAYER
+		model.scale = MODEL_SCALE
 		add_child(model)
 
 		model = Main.MODELS[1 if Main.RIVAL_INDEXES[0] == 1 else 0].instantiate()
-		model.position = Vector3(5.5, -1.8, 0)
-		model.rotation_degrees.y = 150
-		model.scale = Vector3.ONE * 3
+		model.position = MODEL_POS_RIVAL
+		model.rotation_degrees.y = MODEL_ROT_RIVAL
+		model.scale = MODEL_SCALE
 		add_child(model)
 
-		await get_tree().create_timer(1.5).timeout
+		await get_tree().create_timer(ARCADE_TIMER).timeout
 		Main.NODE.add_child(Game.new())
 		self.queue_free()
