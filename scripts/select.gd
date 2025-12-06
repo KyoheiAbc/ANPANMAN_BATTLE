@@ -49,7 +49,6 @@ func _on_start_pressed() -> void:
 		if i != Main.PLAYER_INDEX:
 			Main.RIVAL_INDEXES.append(i)
 	Main.RIVAL_INDEXES.shuffle()
-	Main.STAGE_INDEX = 0
 
 	queue_free()
 	Main.NODE.add_child(Arcade.new())

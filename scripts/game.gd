@@ -16,7 +16,7 @@ func _ready():
 	stage()
 
 	player = Character.character_new(Main.PLAYER_INDEX)
-	rival = Character.character_new(Main.RIVAL_INDEXES[Main.STAGE_INDEX])
+	rival = Character.character_new(Main.RIVAL_INDEXES[0])
 	add_child(player)
 	player.position.x = -400
 

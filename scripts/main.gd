@@ -10,7 +10,6 @@ static var WINDOW: Vector2 = Vector2(
 static var PLAYER_INDEX: int = 0
 static var RIVAL_INDEXES: Array[int] = []
 static var HIT_STOP_COUNT: int = 0
-static var STAGE_INDEX: int = 0
 
 
 const MODELS: Array[PackedScene] = [
