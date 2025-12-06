@@ -1,7 +1,5 @@
 class_name Array2D
 
-const EMPTY_CELL := -1
-
 static func new_array_2d(size: Vector2, default_value) -> Array:
 	var array_2d: Array = []
 	for y in range(size.y):
@@ -35,7 +33,7 @@ static func get_position(array_2d: Array, value) -> Vector2:
 		for x in range(array_2d[0].size()):
 			if array_2d[y][x] == value:
 				return Vector2(x, y)
-	return Vector2(EMPTY_CELL, EMPTY_CELL)
+	return Vector2(-1, -1)
 
 static func warp_position(array_2d: Array, position: Vector2) -> Vector2:
 	var size = get_size(array_2d)
@@ -55,8 +53,8 @@ static func move_value(array_2d: Array, value, delta: Vector2) -> bool:
 	var new_position: Vector2
 	for i in range(max(array_2d.size(), array_2d[0].size())):
 		new_position = warp_position(array_2d, old_position + delta)
-		if get_value(array_2d, new_position) == EMPTY_CELL:
-			set_value(array_2d, initial_position, EMPTY_CELL)
+		if get_value(array_2d, new_position) == -1:
+			set_value(array_2d, initial_position, -1)
 			set_value(array_2d, new_position, value)
 			return true
 		old_position = new_position

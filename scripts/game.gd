@@ -1,36 +1,5 @@
 class_name Game extends Node
 
-const PLAYER_START_X := -400
-const RIVAL_START_X := 400
-const HP_SLIDER_SIZE := Vector2(700, 30)
-const HP_SLIDER_COLOR := Color(0, 1, 0)
-const HP_SLIDER_POS_1 := Vector2(-750, -380)
-const HP_SLIDER_POS_2 := Vector2(50, -380)
-const SP_SLIDER_SIZE := Vector2(700, 20)
-const SP_SLIDER_COLOR := Color(1, 1, 0)
-const SP_SLIDER_POS_1 := Vector2(-750, -340)
-const SP_SLIDER_POS_2 := Vector2(50, -340)
-const GAME_OVER_COUNT_INIT := 3.0
-const READY_LABEL_TEXT := "READY"
-const GO_LABEL_TEXT := "GO!"
-const WIN_LABEL_TEXT := "YOU WIN"
-const LOSE_LABEL_TEXT := "YOU LOSE"
-const GAME_OVER_FPS := 15
-const NORMAL_FPS := 60
-const GAME_OVER_LABEL_TIME := 1.0
-const INPUT_RECT_X_RATIO := 0.75
-const INPUT_Y_HALF_RATIO := 0.5
-const INPUT_DRAG_JUMP := -64
-const INPUT_DRAG_WALK_RIGHT := 8
-const INPUT_DRAG_WALK_LEFT := -8
-const PLAYER_COLLISION_VEL_X := 2
-const PLAYER_COLLISION_VEL_Y := -2
-const HP_SLIDER_MAX := 1000
-const STAGE_SIZE := Vector2(16, 4)
-const STAGE_POS := Vector3(0, -2, -1)
-const STAGE_COLOR := Color(0, 0.5, 0)
-const SLIDER_BG_COLOR := Color(0.4, 0.4, 0.4)
-
 var player: Character
 var rival: Character
 var bot: Bot
@@ -41,7 +10,7 @@ var sp_sliders: Array[Game.GameHSlider] = []
 
 var label: Label
 
-var game_over_count: float = GAME_OVER_COUNT_INIT
+var game_over_count: float = 3.0
 
 func _ready():
 	stage()
@@ -49,28 +18,28 @@ func _ready():
 	player = Character.character_new(Main.PLAYER_INDEX)
 	rival = Character.character_new(Main.RIVAL_INDEXES[0])
 	add_child(player)
-	player.position.x = PLAYER_START_X
+	player.position.x = -400
 
 	add_child(rival)
-	rival.position.x = RIVAL_START_X
+	rival.position.x = 400
 
 	player.rival = rival
 	rival.rival = player
 
-	hp_sliders.append(Game.GameHSlider.new(HP_SLIDER_SIZE, HP_SLIDER_COLOR))
-	hp_sliders[0].position = HP_SLIDER_POS_1
+	hp_sliders.append(Game.GameHSlider.new(Vector2(700, 30), Color(0, 1, 0)))
+	hp_sliders[0].position = Vector2(-750, -380)
 	add_child(hp_sliders[0])
 
-	hp_sliders.append(Game.GameHSlider.new(HP_SLIDER_SIZE, HP_SLIDER_COLOR))
-	hp_sliders[1].position = HP_SLIDER_POS_2
+	hp_sliders.append(Game.GameHSlider.new(Vector2(700, 30), Color(0, 1, 0)))
+	hp_sliders[1].position = Vector2(50, -380)
 	add_child(hp_sliders[1])
 
-	sp_sliders.append(Game.GameHSlider.new(SP_SLIDER_SIZE, SP_SLIDER_COLOR))
-	sp_sliders[0].position = SP_SLIDER_POS_1
+	sp_sliders.append(Game.GameHSlider.new(Vector2(700, 20), Color(1, 1, 0)))
+	sp_sliders[0].position = Vector2(-750, -340)
 	add_child(sp_sliders[0])
 
-	sp_sliders.append(Game.GameHSlider.new(SP_SLIDER_SIZE, SP_SLIDER_COLOR))
-	sp_sliders[1].position = SP_SLIDER_POS_2
+	sp_sliders.append(Game.GameHSlider.new(Vector2(700, 20), Color(1, 1, 0)))
+	sp_sliders[1].position = Vector2(50, -340)
 	add_child(sp_sliders[1])
 
 
@@ -85,33 +54,33 @@ func _ready():
 
 	label = Main.label_new()
 	add_child(label)
-	label.text = READY_LABEL_TEXT
+	label.text = "READY"
 
 
 	await get_tree().create_timer(1.0).timeout
-	label.text = GO_LABEL_TEXT
+	label.text = "GO!"
 	await get_tree().create_timer(0.5).timeout
 	label.text = ""
 	set_process(true)
 
 	add_child(input_controller)
-	input_controller.rect.end.x = ProjectSettings.get_setting("display/window/size/viewport_width") * INPUT_RECT_X_RATIO
+	input_controller.rect.end.x = ProjectSettings.get_setting("display/window/size/viewport_width") * 0.75
 	input_controller.signal_pressed.connect(func(position: Vector2) -> void:
 		if is_game_over():
 			quit()
 			return
-		if position.y < ProjectSettings.get_setting("display/window/size/viewport_height") * INPUT_Y_HALF_RATIO:
+		if position.y < ProjectSettings.get_setting("display/window/size/viewport_height") / 2:
 			player.jump()
 	)
 
 	var input_controller_pressed = InputController.new()
 	add_child(input_controller_pressed)
-	input_controller_pressed.rect.position.x = ProjectSettings.get_setting("display/window/size/viewport_width") * INPUT_RECT_X_RATIO
+	input_controller_pressed.rect.position.x = ProjectSettings.get_setting("display/window/size/viewport_width") * 0.75
 	input_controller_pressed.signal_pressed.connect(func(position: Vector2) -> void:
 		if is_game_over():
 			quit()
 			return
-		if position.y > ProjectSettings.get_setting("display/window/size/viewport_height") * INPUT_Y_HALF_RATIO:
+		if position.y > ProjectSettings.get_setting("display/window/size/viewport_height") / 2:
 			player.attack()
 		else:
 			player.special()
@@ -120,9 +89,9 @@ func _ready():
 func _process(delta: float) -> void:
 	if is_game_over():
 		game_over_count -= delta
-		Engine.max_fps = GAME_OVER_FPS
-		if game_over_count < GAME_OVER_LABEL_TIME:
-			label.text = WIN_LABEL_TEXT if rival.hp <= 0 else LOSE_LABEL_TEXT
+		Engine.max_fps = 15
+		if game_over_count < 1.0:
+			label.text = "YOU WIN" if rival.hp <= 0 else "YOU LOSE"
 
 	if Main.HIT_STOP_COUNT > 0:
 		Main.HIT_STOP_COUNT -= 1
@@ -131,11 +100,11 @@ func _process(delta: float) -> void:
 		return
 
 	if not is_game_over():
-		if input_controller.drag.y < INPUT_DRAG_JUMP:
+		if input_controller.drag.y < -64:
 			player.jump()
-		if input_controller.drag.x > INPUT_DRAG_WALK_RIGHT:
+		if input_controller.drag.x > 8:
 			player.walk(1)
-		if input_controller.drag.x < INPUT_DRAG_WALK_LEFT:
+		if input_controller.drag.x < -8:
 			player.walk(-1)
 
 	player.process()
@@ -147,8 +116,8 @@ func _process(delta: float) -> void:
 	for area in player.get_overlapping_areas():
 		if area == rival:
 			var sign = sign(player.position.x - rival.position.x)
-			player.velocity = Vector2(PLAYER_COLLISION_VEL_X * sign, PLAYER_COLLISION_VEL_Y)
-			rival.velocity = Vector2(-PLAYER_COLLISION_VEL_X * sign, PLAYER_COLLISION_VEL_Y)
+			player.velocity = Vector2(2 * sign, -2)
+			rival.velocity = Vector2(-2 * sign, -2)
 
 	hp_sliders[0].value = player.hp / float(player.hp_max) * hp_sliders[0].max_value
 	hp_sliders[1].value = rival.hp / float(rival.hp_max) * hp_sliders[1].max_value
@@ -159,7 +128,7 @@ func _process(delta: float) -> void:
 func quit() -> void:
 	if game_over_count >= 0:
 		return
-	Engine.max_fps = NORMAL_FPS
+	Engine.max_fps = 60
 	self.queue_free()
 	if player.hp <= 0:
 		Main.NODE.add_child(Main.Initial.new())
@@ -178,11 +147,11 @@ func is_game_over() -> bool:
 func stage() -> void:
 	var stage = MeshInstance3D.new()
 	stage.mesh = QuadMesh.new()
-	stage.mesh.size = STAGE_SIZE
-	stage.position = STAGE_POS
+	stage.mesh.size = Vector2(16, 4)
+	stage.position = Vector3(0, -2, -1)
 	add_child(stage)
 	stage.material_override = StandardMaterial3D.new()
-	stage.material_override.albedo_color = STAGE_COLOR
+	stage.material_override.albedo_color = Color(0, 0.5, 0)
 
 
 class CustomCollisionShape2D extends CollisionShape2D:
@@ -212,13 +181,13 @@ class GameHSlider extends HSlider:
 		add_theme_stylebox_override("grabber_area_highlight", stylebox)
 		add_theme_stylebox_override("grabber_area", stylebox)
 		stylebox = StyleBoxFlat.new()
-		stylebox.bg_color = SLIDER_BG_COLOR
+		stylebox.bg_color = Color(0.4, 0.4, 0.4)
 		stylebox.content_margin_top = _size.y
 		add_theme_stylebox_override("slider", stylebox)
 
 		size = _size
 
 		min_value = 0
-		max_value = HP_SLIDER_MAX
+		max_value = 1000
 		editable = false
 		value = max_value
