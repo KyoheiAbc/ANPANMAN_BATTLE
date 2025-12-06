@@ -23,6 +23,10 @@ func _ready() -> void:
 	model.rotation_degrees.y = 150
 	add_child(model)
 
+	sprites[Main.PLAYER_INDEX].modulate = Color(1, 1, 1, 1)
+	for i in Main.RIVAL_INDEXES:
+		sprites[i].modulate = Color(1, 1, 1, 1)
+	
 	_setup_camera()
 
 	await get_tree().create_timer(1.5).timeout
@@ -48,6 +52,8 @@ func _setup_sprites() -> void:
 		sprite.position = Vector2(i % 4, i / 4) * CELL_SIZE + offset
 		sprites.append(sprite)
 		add_child(sprite)
+		sprite.modulate = Color(0.5, 0.5, 0.5, 0.5)
+
 
 func _setup_cursor() -> void:
 	for i in 2:
