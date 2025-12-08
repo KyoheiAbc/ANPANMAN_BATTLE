@@ -54,9 +54,9 @@ func camera() -> void:
 
 	var camera_3d = Camera3D.new()
 	add_child(camera_3d)
-	camera_3d.position = Vector3(0, 0, 8)
+	camera_3d.position = Vector3(0, 1.6, 6.4)
 	camera_3d.projection = Camera3D.PROJECTION_ORTHOGONAL
-	camera_3d.size = 8
+	camera_3d.size = 6.4
 	var light = DirectionalLight3D.new()
 	camera_3d.add_child(light)
 	light.shadow_enabled = false

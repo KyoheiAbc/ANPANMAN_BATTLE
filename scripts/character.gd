@@ -204,8 +204,8 @@ func physics_process():
 func clamp_position():
 	if state == State.LOSE:
 		return
-	position.x = clamp(position.x, -800, 800)
-	position.y = clamp(position.y, -400, -size.y / 2)
+	position.x = clamp(position.x, -640, 640)
+	position.y = clamp(position.y, -320, -size.y / 2)
 
 
 class Attack extends Area2D:
