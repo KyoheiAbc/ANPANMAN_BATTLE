@@ -189,3 +189,17 @@ class GameHSlider extends HSlider:
 		max_value = 1000
 		editable = false
 		value = max_value
+
+func _input(event: InputEvent) -> void:
+	if event is InputEventKey and event.pressed:
+		if event.keycode == KEY_SHIFT:
+			player.attack()
+		elif event.keycode == KEY_SPACE:
+			player.special()
+		elif event.keycode == KEY_UP or event.keycode == KEY_W:
+			player.jump()
+		elif event.keycode == KEY_ENTER:
+			if randf() < 0.5:
+				player.attack()
+			else:
+				player.special()

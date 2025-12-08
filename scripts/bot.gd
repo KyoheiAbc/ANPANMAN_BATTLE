@@ -18,12 +18,11 @@ func _init(character: Character, rival: Character) -> void:
 	frame_count = randi_range(16, 32)
 	walk_direction = character.direction
 
-	character.attack_cool_time_max /= 3.0
-	character.special_cool_time_max /= 2.0
+	# character.attack_cool_time_max /= 3.0
+	# character.special_cool_time_max /= 2.0
 
 
 func process() -> void:
-	return
 	if character.state == Character.State.LOSE:
 		return
 
