@@ -98,7 +98,7 @@ func _process(delta: float) -> void:
 		rival.model.visible = true
 		return
 
-	if input_controller.drag.y < -64:
+	if input_controller.drag.y < -32:
 		player.jump()
 	
 	if input_controller.drag.x > 8:
@@ -151,7 +151,6 @@ func stage() -> void:
 	add_child(stage)
 	stage.material_override = StandardMaterial3D.new()
 	stage.material_override.albedo_color = Color(0, 0.5, 0)
-
 
 class CustomCollisionShape2D extends CollisionShape2D:
 	var color_rect: ColorRect

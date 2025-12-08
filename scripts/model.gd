@@ -60,7 +60,7 @@ func all_rotation_x(x_degrees: float) -> void:
 	legs[1].rotation_degrees.x = x_degrees
 
 func walk() -> void:
-	var progress = sin(2.0 * PI * walk_count / 45.0)
+	var progress = sin(2.0 * PI * walk_count / 30.0)
 	all_rotation_x(45 * progress)
 	walk_count += 1
 

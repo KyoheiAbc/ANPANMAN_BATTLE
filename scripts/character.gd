@@ -15,16 +15,18 @@ var model: Model
 
 var attacks: Array[Attack] = []
 var attack_cool_time: int = 0
-var attack_cool_time_max: int = 30
+var attack_cool_time_max: int = 15
 var special_cool_time: int = 0
 var special_cool_time_max: int = 300
 var hp_max: int = 300
-var walk_acceleration: float = 0.8
-var jump_velocity: float = -16
-var friction: float = 0.92
-var character_gravity: float = 0.8
-var attack_move: float = 1.0
-var dash_velocity: float = 16.0
+var walk_acceleration: float = 14.0
+var jump_velocity: float = -24.0
+var friction: float = 0.80
+var character_gravity: float = 1.6
+var attack_move: float = 4.0
+var dash_velocity: float = 48.0
+
+const EFFECT_SPRITE: Texture2D = preload("res://assets/effect.png")
 
 
 enum State {
@@ -37,10 +39,10 @@ enum State {
 var state: State = State.IDLE
 
 var attack_infos: Array[Attack.Info] = [
-	Attack.Info.new([10, 5, 10], Vector2(50, 0), Vector2(100, 100), 10, Vector2(0, -8), 20, 10),
-	Attack.Info.new([10, 5, 10], Vector2(50, 0), Vector2(100, 100), 10, Vector2(0, -8), 20, 10),
-	Attack.Info.new([10, 5, 30], Vector2(50, 0), Vector2(100, 100), 10, Vector2(32, -8), 60, 30),
-	Attack.Info.new([30, 45, 30], Vector2(50, 0), Vector2(100, 100), 30, Vector2(0, -32), 60, 30),
+	Attack.Info.new([8, 2, 8], Vector2(50, 0), Vector2(100, 100), 10, Vector2(0, -8), 8, 8),
+	Attack.Info.new([8, 2, 8], Vector2(50, 0), Vector2(100, 100), 10, Vector2(0, -8), 8, 8),
+	Attack.Info.new([8, 2, 16], Vector2(50, 0), Vector2(100, 100), 10, Vector2(32, -8), 60, 8),
+	Attack.Info.new([16, 32, 16], Vector2(50, 0), Vector2(100, 100), 30, Vector2(0, -32), 60, 8),
 ]
 
 static func character_new(index: int) -> Character:
@@ -72,7 +74,7 @@ func _init(size: Vector2):
 func walk(walk_direction: int) -> void:
 	if state != State.IDLE:
 		return
-	velocity.x += walk_direction * walk_acceleration
+	position.x += walk_acceleration * walk_direction
 
 func is_jumping() -> bool:
 	return position.y + size.y / 2 < 0
@@ -213,6 +215,7 @@ class Attack extends Area2D:
 	var direction: int = 1
 	var collision_shape: Game.CustomCollisionShape2D
 	var current_combo: int = 0
+	var effect_sprite: Sprite2D
 	class Info:
 		var counts: Array[int]
 		var position: Vector2
@@ -247,6 +250,16 @@ class Attack extends Area2D:
 		collision_shape = Game.CustomCollisionShape2D.new(info.size)
 		self.current_combo = current_combo
 		add_child(collision_shape)
+		effect_sprite = Sprite2D.new()
+		effect_sprite.texture = EFFECT_SPRITE
+		add_child(effect_sprite)
+		effect_sprite.visible = false
+		effect_sprite.scale /= 2.0
+		if direction == -1:
+			effect_sprite.flip_h = true
+		effect_sprite.position.y = -16
+		effect_sprite.position.x = 16 * direction
+		effect_sprite.modulate = Color.from_hsv(0, 0.8, 1.0, 0.8)
 
 	func process() -> bool:
 		if frame_count < 0:
@@ -254,6 +267,7 @@ class Attack extends Area2D:
 		if frame_count == total_frame_count():
 			character.model.action()
 			character.velocity.x += character.attack_move * direction
+			effect_sprite.visible = true
 		elif frame_count == info.counts[2]:
 			character.model.idle()
 		character.unique_process(self)
