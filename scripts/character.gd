@@ -26,7 +26,11 @@ var character_gravity: float = 1.6
 var attack_move: float = 4.0
 var dash_velocity: float = 48.0
 
+var audio_player = AudioStreamPlayer.new()
+
+
 const EFFECT_SPRITE: Texture2D = preload("res://assets/effect.png")
+const EFFECT_SOUND: AudioStream = preload("res://assets/effect.mp3")
 
 
 enum State {
@@ -70,6 +74,9 @@ func _init(size: Vector2):
 
 	hp = hp_max
 	attack_cool_time = attack_cool_time_max
+
+	add_child(audio_player)
+	audio_player.stream = EFFECT_SOUND
 
 func walk(walk_direction: int) -> void:
 	if state != State.IDLE:
@@ -119,10 +126,14 @@ func damage(attack: Attack) -> void:
 	idle()
 	state = State.FREEZE
 	hp -= attack.info.damage
+	
+	audio_player.play()
+
 	frame_count = attack.info.freeze_count
 	velocity = attack.info.knockback
 	velocity.x *= attack.direction
 	Main.HIT_STOP_COUNT = attack.info.hit_stop
+
 	if hp <= 0:
 		state = State.LOSE
 		frame_count = 1000000

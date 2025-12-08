@@ -33,10 +33,20 @@ const SPRITES: Array[Texture2D] = [
 	preload("res://assets/a_edited.png"),
 ]
 
+const BGM: AudioStream = preload("res://assets/bgm.mp3")
+
 func _init() -> void:
 	NODE = self
 	NODE.add_child(Initial.new())
 	camera()
+
+func _ready() -> void:
+	var audio_player = AudioStreamPlayer.new()
+	NODE.add_child(audio_player)
+	audio_player.stream = BGM
+	audio_player.stream.loop = true
+	audio_player.volume_db = -16
+	audio_player.play()
 
 class Initial extends Node:
 	func _init() -> void:
