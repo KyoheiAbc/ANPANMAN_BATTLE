@@ -14,7 +14,7 @@ var game_over_count: float = 3.0
 
 func _ready():
 	stage()
-
+	
 	player = Character.character_new(Main.PLAYER_INDEX)
 	rival = Character.character_new(Main.RIVAL_INDEXES[0])
 	add_child(player)
@@ -98,7 +98,7 @@ func _process(delta: float) -> void:
 		rival.model.visible = true
 		return
 
-	if input_controller.drag.y < -32:
+	if input_controller.drag.y < -64:
 		player.jump()
 	
 	if input_controller.drag.x > 8:
@@ -117,8 +117,8 @@ func collision() -> void:
 	for area in player.get_overlapping_areas():
 		if area == rival:
 			var sign = sign(player.position.x - rival.position.x)
-			player.velocity = Vector2(2 * sign, 0)
-			rival.velocity = Vector2(-2 * sign, 0)
+			player.velocity = Vector2(3.2 * sign, -3.2)
+			rival.velocity = Vector2(-3.2 * sign, -3.2)
 
 	update_sliders()
 
@@ -133,6 +133,7 @@ func quit() -> void:
 	if game_over_count > 0:
 		return
 	Engine.max_fps = 60
+
 	self.queue_free()
 	if player.hp <= 0:
 		Main.NODE.add_child(Main.Initial.new())

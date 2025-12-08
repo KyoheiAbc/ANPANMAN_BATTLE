@@ -19,12 +19,12 @@ var attack_cool_time_max: int = 15
 var special_cool_time: int = 0
 var special_cool_time_max: int = 300
 var hp_max: int = 300
-var walk_acceleration: float = 14.0
+var walk_acceleration: float = 2.4
 var jump_velocity: float = -24.0
 var friction: float = 0.80
 var character_gravity: float = 1.6
 var attack_move: float = 4.0
-var dash_velocity: float = 48.0
+var dash_velocity: float = 32.0
 
 const EFFECT_SPRITE: Texture2D = preload("res://assets/effect.png")
 
@@ -41,8 +41,8 @@ var state: State = State.IDLE
 var attack_infos: Array[Attack.Info] = [
 	Attack.Info.new([8, 2, 8], Vector2(50, 0), Vector2(100, 100), 10, Vector2(0, -8), 8, 8),
 	Attack.Info.new([8, 2, 8], Vector2(50, 0), Vector2(100, 100), 10, Vector2(0, -8), 8, 8),
-	Attack.Info.new([8, 2, 16], Vector2(50, 0), Vector2(100, 100), 10, Vector2(32, -8), 60, 8),
-	Attack.Info.new([16, 32, 16], Vector2(50, 0), Vector2(100, 100), 30, Vector2(0, -32), 60, 8),
+	Attack.Info.new([8, 2, 16], Vector2(50, 0), Vector2(100, 100), 10, Vector2(32, -8), 16, 8),
+	Attack.Info.new([16, 32, 16], Vector2(50, 0), Vector2(100, 100), 30, Vector2(0, -32), 32, 8),
 ]
 
 static func character_new(index: int) -> Character:
@@ -74,7 +74,7 @@ func _init(size: Vector2):
 func walk(walk_direction: int) -> void:
 	if state != State.IDLE:
 		return
-	position.x += walk_acceleration * walk_direction
+	velocity.x += walk_acceleration * walk_direction
 
 func is_jumping() -> bool:
 	return position.y + size.y / 2 < 0
@@ -254,12 +254,16 @@ class Attack extends Area2D:
 		effect_sprite.texture = EFFECT_SPRITE
 		add_child(effect_sprite)
 		effect_sprite.visible = false
-		effect_sprite.scale /= 2.0
+		effect_sprite.scale /= 1.5
 		if direction == -1:
 			effect_sprite.flip_h = true
-		effect_sprite.position.y = -16
-		effect_sprite.position.x = 16 * direction
-		effect_sprite.modulate = Color.from_hsv(0, 0.8, 1.0, 0.8)
+		# effect_sprite.position.y = -8
+		# effect_sprite.position.x = 8 * direction
+		effect_sprite.modulate = Color.from_hsv(0, 0.8, 1.0, 0.5)
+		if character is Baikin:
+			effect_sprite.modulate.h = 280 / 360.0
+		elif character is Anpan:
+			effect_sprite.modulate.h = 0.0
 
 	func process() -> bool:
 		if frame_count < 0:
