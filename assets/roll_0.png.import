@@ -2,19 +2,19 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://d2k1em8p3tg0p"
-path="res://.godot/imported/dokin_0.png-15ea5cfb78b5621bbe53955cc5b9a341.ctex"
+uid="uid://mx2lu6ptg8yg"
+path="res://.godot/imported/roll_0.png-42be42b70ea1fa901064794599d9787c.ctex"
 metadata={
 "vram_texture": false
 }
 generator_parameters={
-"md5": "bb71ca7fbd82af7876d6cf08aab31924"
+"md5": "1720e3f4d724e6c59d7f09f22e5e08f2"
 }
 
 [deps]
 
-source_file="res://assets/dokin_0.png"
-dest_files=["res://.godot/imported/dokin_0.png-15ea5cfb78b5621bbe53955cc5b9a341.ctex"]
+source_file="res://assets/roll_0.png"
+dest_files=["res://.godot/imported/roll_0.png-42be42b70ea1fa901064794599d9787c.ctex"]
 
 [params]
 

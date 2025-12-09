@@ -6,6 +6,11 @@ const ASSETS = [
 	"anpanman.gltf",
 	"baikinman.gltf",
 	"dokin.gltf",
+	"syokupanman.gltf",
+	"kare.gltf",
+	"meron.gltf",
+	"kokin.gltf",
+	"roll.gltf",
 ]
 
 func _init():

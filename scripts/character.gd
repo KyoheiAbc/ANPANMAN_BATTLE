@@ -149,8 +149,11 @@ func special():
 	frame_count = 1000000
 
 func unique_process(attack: Attack) -> void:
-	pass
-
+	if state == State.SPECIAL:
+		if attack.is_active_frame():
+			position.x += 16 * direction
+		velocity = Vector2.ZERO
+	
 func process():
 	if state == State.ATTACKING:
 		var attack_finished = true

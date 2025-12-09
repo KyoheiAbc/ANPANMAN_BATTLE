@@ -15,22 +15,22 @@ const MODELS: Array[PackedScene] = [
 	preload("res://assets/anpanman.gltf"),
 	preload("res://assets/baikinman.gltf"),
 	preload("res://assets/dokin.gltf"),
-	preload("res://assets/model.gltf"),
-	preload("res://assets/model.gltf"),
-	preload("res://assets/model.gltf"),
-	preload("res://assets/model.gltf"),
-	preload("res://assets/model.gltf"),
+	preload("res://assets/syokupanman.gltf"),
+	preload("res://assets/kare.gltf"),
+	preload("res://assets/meron.gltf"),
+	preload("res://assets/kokin.gltf"),
+	preload("res://assets/roll.gltf"),
 ]
 
 const SPRITES: Array[Texture2D] = [
 	preload("res://assets/anpanman.png"),
 	preload("res://assets/baikinman.png"),
 	preload("res://assets/dokin.png"),
-	preload("res://assets/model.png"),
-	preload("res://assets/model.png"),
-	preload("res://assets/model.png"),
-	preload("res://assets/model.png"),
-	preload("res://assets/model.png"),
+	preload("res://assets/syokupanman.png"),
+	preload("res://assets/kare.png"),
+	preload("res://assets/meron.png"),
+	preload("res://assets/kokin.png"),
+	preload("res://assets/roll.png"),
 ]
 
 const BGM: AudioStream = preload("res://assets/bgm.mp3")

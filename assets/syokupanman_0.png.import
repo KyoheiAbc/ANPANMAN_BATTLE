@@ -2,19 +2,19 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://d2k1em8p3tg0p"
-path="res://.godot/imported/dokin_0.png-15ea5cfb78b5621bbe53955cc5b9a341.ctex"
+uid="uid://baweqkhddyfra"
+path="res://.godot/imported/syokupanman_0.png-abc90febd85ddb762627f19e9c58fa01.ctex"
 metadata={
 "vram_texture": false
 }
 generator_parameters={
-"md5": "bb71ca7fbd82af7876d6cf08aab31924"
+"md5": "ca19bece8aadbc15e45440aeb1805fc4"
 }
 
 [deps]
 
-source_file="res://assets/dokin_0.png"
-dest_files=["res://.godot/imported/dokin_0.png-15ea5cfb78b5621bbe53955cc5b9a341.ctex"]
+source_file="res://assets/syokupanman_0.png"
+dest_files=["res://.godot/imported/syokupanman_0.png-abc90febd85ddb762627f19e9c58fa01.ctex"]
 
 [params]
 

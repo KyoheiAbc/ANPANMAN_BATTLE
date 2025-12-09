@@ -2,19 +2,19 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://d2k1em8p3tg0p"
-path="res://.godot/imported/dokin_0.png-15ea5cfb78b5621bbe53955cc5b9a341.ctex"
+uid="uid://sxeqyalr474m"
+path="res://.godot/imported/kare_0.png-d8994ecd977868b8cfe6219dbdf948ba.ctex"
 metadata={
 "vram_texture": false
 }
 generator_parameters={
-"md5": "bb71ca7fbd82af7876d6cf08aab31924"
+"md5": "d57712c929673c67b947b0c0cd6a0dae"
 }
 
 [deps]
 
-source_file="res://assets/dokin_0.png"
-dest_files=["res://.godot/imported/dokin_0.png-15ea5cfb78b5621bbe53955cc5b9a341.ctex"]
+source_file="res://assets/kare_0.png"
+dest_files=["res://.godot/imported/kare_0.png-d8994ecd977868b8cfe6219dbdf948ba.ctex"]
 
 [params]
 
