@@ -8,7 +8,7 @@ var rival: Character
 var frame_count: int = 0
 var walk_direction: int = 0
 
-var attack_probability_close = 1 / 16.0
+var attack_probability_close = 1 / 32.0
 
 
 func _init(character: Character, rival: Character) -> void:
@@ -34,8 +34,8 @@ func process() -> void:
 	if frame_count < 0:
 		frame_count = randi_range(16, 32)
 		walk_direction = character.direction
-		if randf() > 0.5:
-			walk_direction = 0 if randf() < 0.5 else character.direction * -1
+		if randf() > 0.333:
+			walk_direction = 0 if randf() < 0.666 else character.direction * -1
 
 
 	if randf() < 1 / 160.0:
@@ -44,7 +44,7 @@ func process() -> void:
 		if randf() < 1 / 16.0:
 			character.jump()
 
-	if randf() < 1 / 16.0:
+	if randf() < 1 / 64.0:
 		character.special()
 
 
@@ -53,7 +53,7 @@ func process() -> void:
 		if randf() < attack_probability_close:
 			character.attack()
 
-	if randf() < 1 / 160.0:
+	if randf() < 1 / 256.0:
 		character.dash()
 
 
