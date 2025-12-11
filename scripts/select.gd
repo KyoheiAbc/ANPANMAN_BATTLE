@@ -34,7 +34,7 @@ func _ready() -> void:
 	button.pressed.connect(func() -> void:
 		Main.PLAYER_INDEX = Array2D.get_position_value(map, 0)
 		Main.RIVAL_INDEXES.clear()
-		for i in Main.SPRITES.size():
+		for i in Main.MODELS.size():
 			if i != Main.PLAYER_INDEX:
 				Main.RIVAL_INDEXES.append(i)
 		Main.RIVAL_INDEXES.shuffle()

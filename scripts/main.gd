@@ -22,16 +22,6 @@ const MODELS: Array[PackedScene] = [
 	preload("res://assets/roll.gltf"),
 ]
 
-const SPRITES: Array[Texture2D] = [
-	preload("res://assets/anpanman.png"),
-	preload("res://assets/baikinman.png"),
-	preload("res://assets/dokin.png"),
-	preload("res://assets/syokupanman.png"),
-	preload("res://assets/kare.png"),
-	preload("res://assets/meron.png"),
-	preload("res://assets/kokin.png"),
-	preload("res://assets/roll.png"),
-]
 
 const BGM: AudioStream = preload("res://assets/bgm.mp3")
 
