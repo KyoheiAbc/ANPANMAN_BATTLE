@@ -45,14 +45,14 @@ func _ready() -> void:
 
 static func create_sprites() -> Array[SubViewportContainer]:
 	var colors: Array[Color] = [
-		Color(1.0, 0.6, 0.6), # 赤系
-		Color(0.6, 0.6, 1.0), # 青系
-		Color(1.0, 0.8, 0.6), # オレンジ系
-		Color(0.6, 1.0, 0.6), # 緑系
-		Color(1.0, 1.0, 0.6), # 黄系
-		Color(0.6, 1.0, 1.0), # 水色系
-		Color(1.0, 0.6, 1.0), # ピンク系
-		Color(0.8, 0.8, 0.8), # グレー系
+		Color.from_hsv(0.0, 0.4, 1.0), # 赤系
+		Color.from_hsv(0.8, 0.4, 1.0), # 紫
+		Color.from_hsv(0.08, 0.4, 1.0), # オレンジ
+		Color.from_hsv(0, 0, 0.85), # グレー
+		Color.from_hsv(0.15, 0.4, 1.0), # 黄色
+		Color.from_hsv(0.33, 0.4, 1.0), # 緑
+		Color.from_hsv(0.6, 0.4, 1.0), # 青色
+		Color.from_hsv(0.65, 0.4, 0.85), # 紺色
 	]
 	var containers: Array[SubViewportContainer] = []
 	for i in Main.MODELS.size():
